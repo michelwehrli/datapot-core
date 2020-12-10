@@ -4,12 +4,14 @@ import {
   Property,
   ManyToMany,
   Collection,
+  ManyToOne,
 } from '@mikro-orm/core'
 import DataBuilder from '../../abstraction/DataBuilder'
 import ICompany from '../../interface/model/data/ICompany'
 import DatabaseService from '../../service/DatabaseService'
 import Table from '../extends/Table'
 import Address from './Address'
+import Contact from './Contact'
 import Email from './Email'
 import Phonenumber from './Phonenumber'
 
@@ -26,15 +28,14 @@ export default class Company extends Table implements ICompany {
   })
   addresses = new Collection<Address>(this)
 
-  @ManyToMany(() => Email, null, {
-    eager: true,
-  })
+  @ManyToMany(() => Email, null, { eager: true })
   emails = new Collection<Email>(this)
 
-  @ManyToMany(() => Phonenumber, null, {
-    eager: true,
-  })
+  @ManyToMany(() => Phonenumber, null, { eager: true })
   phonenumbers = new Collection<Phonenumber>(this)
+
+  @ManyToOne(() => Contact, { eager: true })
+  contact_person?: Contact
 
   @Property({ nullable: true })
   websites?: string[]
@@ -127,6 +128,15 @@ export default class Company extends Table implements ICompany {
       }
     }
 
+    if (data && data.contact_person && data.contact_person.id) {
+      const existing: Contact = await DatabaseService.findOne('data', Contact, {
+        id: data.contact_person.id,
+      })
+      this.contact_person = existing
+        ? existing
+        : await new Contact().init(data.contact_person)
+    }
+
     this.websites = data.websites
     this.remarks = data.remarks
 
@@ -171,6 +181,10 @@ export default class Company extends Table implements ICompany {
         label: 'Telefonnummern',
         multiple: true,
         type: Phonenumber.getDatamodel(),
+      },
+      contact_person: {
+        label: 'Kontaktperson',
+        type: Contact.getDatamodel(true),
       },
       websites: {
         label: 'Webseiten',
