@@ -332,7 +332,7 @@ export default class Projectreference extends Table
     return this
   }
 
-  public static getDatamodel(alreadyCalled: boolean) {
+  public static getDatamodel() {
     return {
       __meta: {
         db: 'data',
@@ -351,14 +351,24 @@ export default class Projectreference extends Table
         isEditable: false,
         isListable: false,
       },
+      projectname: {
+        label: 'Projektname',
+        type: 'string',
+      },
+      uniquename: {
+        label: 'Eindeutiger Name',
+        type: 'string',
+      },
       attachements: {
         label: 'Anhänge',
         multiple: true,
         type: Document.getDatamodel(),
+        isListable: false,
       },
       budget: {
         label: 'Budget',
         type: 'string',
+        isListable: false,
       },
       client: {
         label: 'Kunde',
@@ -367,103 +377,117 @@ export default class Projectreference extends Table
       competence_fields: {
         label: 'Kompetenzfelder',
         type: 'string',
+        isListable: false,
       },
       complexity: {
         label: 'Komplexität',
         type: Complexity.getDatamodel(),
+        isListable: false,
       },
       complexity_string: {
         label: 'Komplexität',
         type: 'string',
+        isListable: false,
       },
       content: {
         label: 'Komplexität',
         type: 'string',
+        isListable: false,
       },
       end_date: {
         label: 'Enddatum',
         type: 'date',
+        isListable: false,
       },
       function: {
         label: 'Funktion',
         type: 'string',
+        isListable: false,
       },
       images: {
         label: 'Bilder',
         multiple: true,
         type: Document.getDatamodel(),
+        isListable: false,
       },
       industries: {
         label: 'Branchen',
         multiple: true,
         type: Industry.getDatamodel(),
+        isListable: false,
       },
       keywords: {
         label: 'Stichwörter',
         multple: true,
         type: 'string',
+        isListable: false,
       },
       load: {
         label: 'Load',
         type: 'string',
+        isListable: false,
       },
       main_image: {
         label: 'Hauptbild',
         type: Document.getDatamodel(),
+        isListable: false,
       },
       novelty: {
         label: 'Neuartigkeit',
         type: 'string',
+        isListable: false,
       },
       potential: {
         label: 'Potential',
         type: 'string',
-      },
-      projectname: {
-        label: 'Projektname',
-        type: 'string',
+        isListable: false,
       },
       reference_person: {
         label: 'Referenzperson',
-        type: Contact.getDatamodel(alreadyCalled),
+        type: Contact.getDatamodel(true),
+        isListable: false,
       },
       responsible_areas: {
         label: 'Verantwortungsbereiche',
         multiple: true,
         type: ResponsibleArea.getDatamodel(),
+        isListable: false,
       },
       responsible_areas_text: {
         label: 'Verantwortungsbereiche',
         type: 'string',
+        isListable: false,
       },
       risk: {
         label: 'Risiko',
         type: 'string',
+        isListable: false,
       },
       roles: {
         label: 'Rollen',
         multiple: true,
         type: Role.getDatamodel(),
+        isListable: false,
       },
       start_date: {
         label: 'Startdatum',
         type: 'date',
+        isListable: false,
       },
       strategic: {
         label: 'Strategisch',
         type: 'string',
+        isListable: false,
       },
       targets: {
         label: 'Ziele',
         type: 'string',
+        isListable: false,
       },
       teaser: {
         label: 'Teaser',
         type: 'string',
-      },
-      uniquename: {
-        label: 'Eindeutiger Name',
-        type: 'string',
+        isListable: false,
       },
     }
   }

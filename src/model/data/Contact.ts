@@ -33,14 +33,10 @@ export default class Contact extends Table implements IContact {
   @Property({ nullable: true })
   surname?: string
 
-  @ManyToOne(() => Gender, {
-    eager: true,
-  })
+  @ManyToOne(() => Gender, { eager: true })
   gender?: Gender
 
-  @ManyToOne(() => Salutation, {
-    eager: true,
-  })
+  @ManyToOne(() => Salutation, { eager: true })
   salutation?: Salutation
 
   @ManyToOne(() => Title, { eager: true })
@@ -49,14 +45,10 @@ export default class Contact extends Table implements IContact {
   @Property({ nullable: true })
   additional_names?: string[]
 
-  @ManyToMany(() => Address, null, {
-    eager: true,
-  })
+  @ManyToMany(() => Address, null, { eager: true })
   addresses = new Collection<Address>(this)
 
-  @ManyToMany(() => CompanyWithLocation, null, {
-    eager: true,
-  })
+  @ManyToMany(() => CompanyWithLocation, null, { eager: true })
   companiesWithLocation = new Collection<CompanyWithLocation>(this)
 
   @Property({ nullable: true })
@@ -65,19 +57,13 @@ export default class Contact extends Table implements IContact {
   @Property({ nullable: true })
   positions?: string[]
 
-  @ManyToMany(() => Phonenumber, null, {
-    eager: true,
-  })
+  @ManyToMany(() => Phonenumber, null, { eager: true })
   phonenumbers_business = new Collection<Phonenumber>(this)
 
-  @ManyToMany(() => Phonenumber, null, {
-    eager: true,
-  })
+  @ManyToMany(() => Phonenumber, null, { eager: true })
   phonenumbers_private = new Collection<Phonenumber>(this)
 
-  @ManyToMany(() => Email, null, {
-    eager: true,
-  })
+  @ManyToMany(() => Email, null, { eager: true })
   emails = new Collection<Email>(this)
 
   @ManyToOne(() => Contact, { eager: true })
@@ -95,19 +81,13 @@ export default class Contact extends Table implements IContact {
   @Property({ nullable: true })
   remarks?: string
 
-  @ManyToOne(() => RWStatus, {
-    eager: true,
-  })
+  @ManyToOne(() => RWStatus, { eager: true })
   rwstatus?: RWStatus
 
-  @ManyToOne(() => Relationship, {
-    eager: true,
-  })
+  @ManyToOne(() => Relationship, { eager: true })
   relationship?: Relationship
 
-  @ManyToMany(() => Category, null, {
-    eager: true,
-  })
+  @ManyToMany(() => Category, null, { eager: true })
   categories = new Collection<Category>(this)
 
   constructor() {
@@ -186,6 +166,15 @@ export default class Contact extends Table implements IContact {
         found = await found.init(address)
         this.addresses.add(found)
       }
+    }
+
+    if (data && data.partner && data.partner.id) {
+      const existing: Contact = await DatabaseService.findOne('data', Contact, {
+        id: data.partner.id,
+      })
+      this.partner = existing
+        ? existing
+        : await new Contact().init(data.partner)
     }
 
     if (data.companiesWithLocation) {
