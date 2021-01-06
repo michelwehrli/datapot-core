@@ -240,7 +240,7 @@ export default class Contact extends Table implements IContact {
       }
       for (const number of data.phonenumbers_private) {
         let found: Phonenumber = DataImporter.getCache(
-          'company/phonenumbers_business/' + JSON.stringify(number)
+          'company/phonenumbers_private/' + JSON.stringify(number)
         )
         if (!found && number.id) {
           found = await DatabaseService.findOne('data', Phonenumber, {
@@ -250,7 +250,7 @@ export default class Contact extends Table implements IContact {
         if (!found) {
           found = new Phonenumber()
           DataImporter.setCache(
-            'company/phonenumbers_business/' + JSON.stringify(number),
+            'company/phonenumbers_private/' + JSON.stringify(number),
             found
           )
         }

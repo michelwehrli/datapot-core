@@ -38,13 +38,12 @@ export default class Phonenumber extends Table implements IPhonenumber {
     this.number = data.number
 
     if (data && data.type && data.type.uniquename) {
-      const existingType: PhonenumberType = await DatabaseService.findOne(
-        'data',
-        PhonenumberType,
-        {
+      let existingType: PhonenumberType
+      if (data && data.type) {
+        existingType = await DatabaseService.findOne('data', PhonenumberType, {
           uniquename: data.type.uniquename,
-        }
-      )
+        })
+      }
       this.type = existingType
         ? existingType
         : DataImporter.getCache('phonenumber/type/' + JSON.stringify(data.type))
@@ -57,13 +56,12 @@ export default class Phonenumber extends Table implements IPhonenumber {
     }
 
     if (data && data.line && data.line.uniquename) {
-      const existingLine: PhonenumberLine = await DatabaseService.findOne(
-        'data',
-        PhonenumberLine,
-        {
+      let existingLine: PhonenumberLine
+      if (data && data.line) {
+        existingLine = await DatabaseService.findOne('data', PhonenumberLine, {
           uniquename: data.line.uniquename,
-        }
-      )
+        })
+      }
       this.line = existingLine
         ? existingLine
         : DataImporter.getCache('phonenumber/line/' + JSON.stringify(data.line))
@@ -74,15 +72,18 @@ export default class Phonenumber extends Table implements IPhonenumber {
         this.line
       )
     }
+
     return this
   }
 
   public toJSON() {
-    return <IPhonenumber>{
+    return <Phonenumber>{
       id: this.id,
+      _creation_date: this._creation_date,
+      _modification_date: this._modification_date,
+      line: this.line,
       number: this.number,
       type: this.type,
-      line: this.line,
     }
   }
 
