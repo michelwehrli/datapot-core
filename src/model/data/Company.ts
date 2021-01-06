@@ -6,7 +6,7 @@ import {
   Collection,
   ManyToOne,
 } from '@mikro-orm/core'
-import DataBuilder from '../../abstraction/DataBuilder'
+import DataImporter from '../../abstraction/DataImporter'
 import ICompany from '../../interface/model/data/ICompany'
 import DatabaseService from '../../service/DatabaseService'
 import Table from '../extends/Table'
@@ -61,7 +61,7 @@ export default class Company extends Table implements ICompany {
         this.addresses.removeAll()
       }
       for (const address of data.addresses) {
-        let found: Address = DataBuilder.getCache(
+        let found: Address = DataImporter.getCache(
           'company/addresses/' + JSON.stringify(address)
         )
         if (!found && address.id) {
@@ -71,7 +71,7 @@ export default class Company extends Table implements ICompany {
         }
         if (!found) {
           found = new Address()
-          DataBuilder.setCache(
+          DataImporter.setCache(
             'company/addresses/' + JSON.stringify(address),
             found
           )
@@ -86,7 +86,7 @@ export default class Company extends Table implements ICompany {
         this.emails.removeAll()
       }
       for (const email of data.emails) {
-        let found: Email = DataBuilder.getCache(
+        let found: Email = DataImporter.getCache(
           'company/emails/' + JSON.stringify(email)
         )
         if (!found && email.id) {
@@ -96,7 +96,10 @@ export default class Company extends Table implements ICompany {
         }
         if (!found) {
           found = new Email()
-          DataBuilder.setCache('company/emails/' + JSON.stringify(email), found)
+          DataImporter.setCache(
+            'company/emails/' + JSON.stringify(email),
+            found
+          )
         }
         found = await found.init(email)
         this.emails.add(found)
@@ -108,7 +111,7 @@ export default class Company extends Table implements ICompany {
         this.phonenumbers.removeAll()
       }
       for (const phonenumber of data.phonenumbers) {
-        let found: Phonenumber = DataBuilder.getCache(
+        let found: Phonenumber = DataImporter.getCache(
           'company/phonenumbers/' + JSON.stringify(phonenumber)
         )
         if (!found && phonenumber.id) {
@@ -118,7 +121,7 @@ export default class Company extends Table implements ICompany {
         }
         if (!found) {
           found = new Phonenumber()
-          DataBuilder.setCache(
+          DataImporter.setCache(
             'company/phonenumbers/' + JSON.stringify(phonenumber),
             found
           )

@@ -14,4 +14,6 @@ export default abstract class IUser {
   abstract design?: IDesign
   abstract refresh_token?: string
   abstract color?: string
+  abstract o365_oauth_token?: string
+  abstract o365_oaccess_token?: string
 }

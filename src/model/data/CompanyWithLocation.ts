@@ -1,5 +1,5 @@
 import { Entity, PrimaryKey, ManyToOne } from '@mikro-orm/core'
-import DataBuilder from '../../abstraction/DataBuilder'
+import DataImporter from '../../abstraction/DataImporter'
 import ICompanyWithLocation from '../../interface/model/data/ICompanyWithLocation'
 import DatabaseService from '../../service/DatabaseService'
 import Table from '../extends/Table'
@@ -30,7 +30,7 @@ export default class CompanyWithLocation extends Table
       this.id = data.id
     }
     if (data.company) {
-      let found: Company = DataBuilder.getCache(
+      let found: Company = DataImporter.getCache(
         'companywithlocation/company/' + data.company.name
       )
       if (!found && data.company.id) {
@@ -41,7 +41,7 @@ export default class CompanyWithLocation extends Table
       if (!found) {
         found = new Company()
       }
-      DataBuilder.setCache(
+      DataImporter.setCache(
         'companywithlocation/company/' + data.company.name,
         found
       )
@@ -50,7 +50,7 @@ export default class CompanyWithLocation extends Table
     }
 
     if (data.address) {
-      let found: Address = DataBuilder.getCache(
+      let found: Address = DataImporter.getCache(
         'company/addresses/' + JSON.stringify(data.address)
       )
       if (!found && data.address.id) {
@@ -61,7 +61,7 @@ export default class CompanyWithLocation extends Table
       if (!found) {
         found = new Address()
       }
-      DataBuilder.setCache(
+      DataImporter.setCache(
         'company/addresses/' + JSON.stringify(data.address),
         found
       )

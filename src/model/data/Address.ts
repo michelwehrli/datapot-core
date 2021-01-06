@@ -1,5 +1,5 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core'
-import DataBuilder from '../../abstraction/DataBuilder'
+import DataImporter from '../../abstraction/DataImporter'
 import IAddress from '../../interface/model/data/IAddress'
 import DatabaseService from '../../service/DatabaseService'
 import Table from '../extends/Table'
@@ -53,10 +53,10 @@ export default class Address extends Table implements IAddress {
       })
       this.zip = existing
         ? existing
-        : DataBuilder.getCache(JSON.stringify(data.zip))
-        ? DataBuilder.getCache(JSON.stringify(data.zip))
+        : DataImporter.getCache(JSON.stringify(data.zip))
+        ? DataImporter.getCache(JSON.stringify(data.zip))
         : await new Zip().init(data.zip)
-      DataBuilder.setCache(JSON.stringify(data.zip), this.zip)
+      DataImporter.setCache(JSON.stringify(data.zip), this.zip)
     }
 
     if (data && data.county && data.county.uniquename) {
@@ -65,10 +65,10 @@ export default class Address extends Table implements IAddress {
       })
       this.county = existing
         ? existing
-        : DataBuilder.getCache(JSON.stringify(data.county))
-        ? DataBuilder.getCache(JSON.stringify(data.county))
+        : DataImporter.getCache(JSON.stringify(data.county))
+        ? DataImporter.getCache(JSON.stringify(data.county))
         : await new County().init(data.county)
-      DataBuilder.setCache(JSON.stringify(data.county), this.county)
+      DataImporter.setCache(JSON.stringify(data.county), this.county)
     }
 
     if (data && data.country && data.country.uniquename) {
@@ -77,10 +77,10 @@ export default class Address extends Table implements IAddress {
       })
       this.country = existing
         ? existing
-        : DataBuilder.getCache(JSON.stringify(data.country))
-        ? DataBuilder.getCache(JSON.stringify(data.country))
+        : DataImporter.getCache(JSON.stringify(data.country))
+        ? DataImporter.getCache(JSON.stringify(data.country))
         : await new Country().init(data.country)
-      DataBuilder.setCache(JSON.stringify(data.country), this.country)
+      DataImporter.setCache(JSON.stringify(data.country), this.country)
     }
 
     return this

@@ -1,3 +1,4 @@
+import { ConstraintViolationException } from '@mikro-orm/core'
 import csv from 'csv-parser'
 import * as fs from 'fs'
 import ICategory from '../interface/model/data/ICategory'
@@ -7,7 +8,7 @@ import DatabaseService from '../service/DatabaseService'
 
 const IMPORT_FILE_PATH = '../../res/excel_export_utf8.csv'
 
-export default class DataBuilder {
+export default class DataImporter {
   constructor() {}
 
   private static cache = {}
@@ -37,6 +38,10 @@ export default class DataBuilder {
         for (const dirtyContact of results) {
           for (const key in dirtyContact) {
             dirtyContact[key] = dirtyContact[key].trim()
+          }
+
+          if (dirtyContact['Geschlecht'] === 'juristisch') {
+            continue
           }
 
           const categories: ICategory[] = []
@@ -204,7 +209,6 @@ export default class DataBuilder {
                     },
                   ]
                 : []),
-
               ...(dirtyContact['E-Mail 2: Adresse']
                 ? [
                     {
@@ -216,7 +220,6 @@ export default class DataBuilder {
                     },
                   ]
                 : []),
-
               ...(dirtyContact['E-Mail 3: Adresse']
                 ? [
                     {
@@ -442,7 +445,19 @@ export default class DataBuilder {
                           ]
                         : []),
                     ],
-                    emails: [],
+                    emails: [
+                      ...(dirtyContact['E-Mail 2: Adresse']
+                        ? [
+                            {
+                              address: dirtyContact['E-Mail 2: Adresse'],
+                              type: {
+                                uniquename: 'private',
+                                label: 'Privat',
+                              },
+                            },
+                          ]
+                        : []),
+                    ],
                     phonenumbers: [
                       ...(dirtyContact['Haupttelefon']
                         ? [
@@ -469,7 +484,7 @@ export default class DataBuilder {
           const contact = await new Contact().init(obj)
 
           if (`${obj.givenname ? `${obj.givenname} ` : ''}${obj.surname}`) {
-            DataBuilder.setCache(
+            DataImporter.setCache(
               `partner ${obj.givenname ? `${obj.givenname} ` : ''}${
                 obj.surname
               }`,
@@ -478,18 +493,18 @@ export default class DataBuilder {
           }
           await DatabaseService.insert('data', [contact])
 
-          DataBuilder.setCache(`contact-${contact.id}`, contact)
+          DataImporter.setCache(`contact-${contact.id}`, contact)
           dirtyContact.id = contact.id
         }
 
         // insert partners after all contacts are done
         for (const dirtyContact of results) {
           if (dirtyContact['Partner/in']) {
-            const contact: Contact = DataBuilder.getCache(
+            const contact: Contact = DataImporter.getCache(
               `contact-${dirtyContact.id}`
             )
             if (contact) {
-              const partner: Contact = DataBuilder.getCache(
+              const partner: Contact = DataImporter.getCache(
                 `partner ${dirtyContact['Partner/in']}`
               )
               if (partner) {

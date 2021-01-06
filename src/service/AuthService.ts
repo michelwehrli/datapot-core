@@ -32,6 +32,8 @@ export default class AuthService {
         id: payload.id,
       })
 
+      res.locals.user = user
+
       const newPayload = { id: user.id }
 
       let newToken = jwt.sign(newPayload, process.env.DATAPOT_TOKEN_SECRET, {

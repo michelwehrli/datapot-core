@@ -1,12 +1,13 @@
 import {
+  Collection,
   Entity,
+  ManyToMany,
+  ManyToOne,
   PrimaryKey,
   Property,
-  ManyToOne,
-  ManyToMany,
-  Collection,
 } from '@mikro-orm/core'
-import DataBuilder from '../../abstraction/DataBuilder'
+
+import DataImporter from '../../abstraction/DataImporter'
 import IContact from '../../interface/model/data/IContact'
 import DatabaseService from '../../service/DatabaseService'
 import Table from '../extends/Table'
@@ -148,7 +149,7 @@ export default class Contact extends Table implements IContact {
         this.addresses.removeAll()
       }
       for (const address of data.addresses) {
-        let found: Address = DataBuilder.getCache(
+        let found: Address = DataImporter.getCache(
           'company/addresses/' + JSON.stringify(address)
         )
         if (!found && address.id) {
@@ -158,7 +159,7 @@ export default class Contact extends Table implements IContact {
         }
         if (!found) {
           found = new Address()
-          DataBuilder.setCache(
+          DataImporter.setCache(
             'company/addresses/' + JSON.stringify(address),
             found
           )
@@ -182,7 +183,7 @@ export default class Contact extends Table implements IContact {
         this.companiesWithLocation.removeAll()
       }
       for (const companyWithLocation of data.companiesWithLocation) {
-        let found: CompanyWithLocation = DataBuilder.getCache(
+        let found: CompanyWithLocation = DataImporter.getCache(
           `company/companieswithlocation/${JSON.stringify(companyWithLocation)}`
         )
         if (!found && companyWithLocation.id) {
@@ -192,7 +193,7 @@ export default class Contact extends Table implements IContact {
         }
         if (!found) {
           found = new CompanyWithLocation()
-          DataBuilder.setCache(
+          DataImporter.setCache(
             `company/companieswithlocation/${JSON.stringify(
               companyWithLocation
             )}`,
@@ -213,7 +214,7 @@ export default class Contact extends Table implements IContact {
         this.phonenumbers_business.removeAll()
       }
       for (const number of data.phonenumbers_business) {
-        let found: Phonenumber = DataBuilder.getCache(
+        let found: Phonenumber = DataImporter.getCache(
           'company/phonenumbers_business/' + JSON.stringify(number)
         )
         if (!found && number.id) {
@@ -223,7 +224,7 @@ export default class Contact extends Table implements IContact {
         }
         if (!found) {
           found = new Phonenumber()
-          DataBuilder.setCache(
+          DataImporter.setCache(
             'company/phonenumbers_business/' + JSON.stringify(number),
             found
           )
@@ -238,7 +239,7 @@ export default class Contact extends Table implements IContact {
         this.phonenumbers_private.removeAll()
       }
       for (const number of data.phonenumbers_private) {
-        let found: Phonenumber = DataBuilder.getCache(
+        let found: Phonenumber = DataImporter.getCache(
           'company/phonenumbers_business/' + JSON.stringify(number)
         )
         if (!found && number.id) {
@@ -248,7 +249,7 @@ export default class Contact extends Table implements IContact {
         }
         if (!found) {
           found = new Phonenumber()
-          DataBuilder.setCache(
+          DataImporter.setCache(
             'company/phonenumbers_business/' + JSON.stringify(number),
             found
           )
@@ -263,7 +264,7 @@ export default class Contact extends Table implements IContact {
         this.emails.removeAll()
       }
       for (const email of data.emails) {
-        let found: Email = DataBuilder.getCache(
+        let found: Email = DataImporter.getCache(
           'company/emails/' + JSON.stringify(email)
         )
         if (!found && email.id) {
@@ -271,7 +272,10 @@ export default class Contact extends Table implements IContact {
         }
         if (!found) {
           found = new Email()
-          DataBuilder.setCache('company/emails/' + JSON.stringify(email), found)
+          DataImporter.setCache(
+            'company/emails/' + JSON.stringify(email),
+            found
+          )
         }
         found = await found.init(email)
         this.emails.add(found)
@@ -287,7 +291,7 @@ export default class Contact extends Table implements IContact {
         this.social_medias.removeAll()
       }
       for (const sm of data.social_medias) {
-        let found: Socialmedia = DataBuilder.getCache(
+        let found: Socialmedia = DataImporter.getCache(
           'company/social_medias/' + JSON.stringify(sm)
         )
         if (!found && sm.id) {
@@ -297,7 +301,7 @@ export default class Contact extends Table implements IContact {
         }
         if (!found) {
           found = new Socialmedia()
-          DataBuilder.setCache(
+          DataImporter.setCache(
             'company/social_medias/' + JSON.stringify(sm),
             found
           )
@@ -340,7 +344,7 @@ export default class Contact extends Table implements IContact {
         this.categories.removeAll()
       }
       for (const category of data.categories) {
-        let found: Category = DataBuilder.getCache(
+        let found: Category = DataImporter.getCache(
           'company/categories/' + JSON.stringify(category)
         )
         if (!found && category.uniquename) {
@@ -350,7 +354,7 @@ export default class Contact extends Table implements IContact {
         }
         if (!found) {
           found = new Category()
-          DataBuilder.setCache(
+          DataImporter.setCache(
             'company/categories/' + JSON.stringify(category),
             found
           )

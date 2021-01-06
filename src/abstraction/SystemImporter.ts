@@ -2,7 +2,7 @@ import IUser from '../interface/model/system/IUser'
 import User from '../model/system/User'
 import DatabaseService from '../service/DatabaseService'
 
-export default class SystemBuilder {
+export default class SystemImporter {
   constructor() {}
 
   public async init() {

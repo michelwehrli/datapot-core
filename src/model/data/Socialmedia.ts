@@ -1,5 +1,5 @@
 import { Entity, PrimaryKey, Property, ManyToOne } from '@mikro-orm/core'
-import DataBuilder from '../../abstraction/DataBuilder'
+import DataImporter from '../../abstraction/DataImporter'
 import ISocialmedia from '../../interface/model/data/ISocialmedia'
 import DatabaseService from '../../service/DatabaseService'
 import Table from '../extends/Table'
@@ -40,10 +40,10 @@ export default class Socialmedia extends Table implements ISocialmedia {
       }
       this.type = existingType
         ? existingType
-        : DataBuilder.getCache('socialmedia/' + JSON.stringify(data.type))
-        ? DataBuilder.getCache('socialmedia/' + JSON.stringify(data.type))
+        : DataImporter.getCache('socialmedia/' + JSON.stringify(data.type))
+        ? DataImporter.getCache('socialmedia/' + JSON.stringify(data.type))
         : await new SocialmediaType().init(data.type)
-      DataBuilder.setCache(
+      DataImporter.setCache(
         'socialmedia/' + JSON.stringify(data.type),
         this.type
       )

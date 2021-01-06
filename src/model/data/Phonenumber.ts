@@ -1,5 +1,5 @@
 import { Entity, PrimaryKey, Property, ManyToOne } from '@mikro-orm/core'
-import DataBuilder from '../../abstraction/DataBuilder'
+import DataImporter from '../../abstraction/DataImporter'
 import IPhonenumber from '../../interface/model/data/IPhonenumber'
 import DatabaseService from '../../service/DatabaseService'
 import Table from '../extends/Table'
@@ -47,10 +47,10 @@ export default class Phonenumber extends Table implements IPhonenumber {
       )
       this.type = existingType
         ? existingType
-        : DataBuilder.getCache('phonenumber/type/' + JSON.stringify(data.type))
-        ? DataBuilder.getCache('phonenumber/type/' + JSON.stringify(data.type))
+        : DataImporter.getCache('phonenumber/type/' + JSON.stringify(data.type))
+        ? DataImporter.getCache('phonenumber/type/' + JSON.stringify(data.type))
         : await new PhonenumberType().init(data.type)
-      DataBuilder.setCache(
+      DataImporter.setCache(
         'phonenumber/type/' + JSON.stringify(data.type),
         this.type
       )
@@ -66,10 +66,10 @@ export default class Phonenumber extends Table implements IPhonenumber {
       )
       this.line = existingLine
         ? existingLine
-        : DataBuilder.getCache('phonenumber/line/' + JSON.stringify(data.line))
-        ? DataBuilder.getCache('phonenumber/line/' + JSON.stringify(data.line))
+        : DataImporter.getCache('phonenumber/line/' + JSON.stringify(data.line))
+        ? DataImporter.getCache('phonenumber/line/' + JSON.stringify(data.line))
         : await new PhonenumberLine().init(data.line)
-      DataBuilder.setCache(
+      DataImporter.setCache(
         'phonenumber/line/' + JSON.stringify(data.line),
         this.line
       )
