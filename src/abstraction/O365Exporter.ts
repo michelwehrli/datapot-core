@@ -1,5 +1,4 @@
 import md5 from 'md5'
-import { resolve } from 'url'
 
 import Category from '../model/data/Category'
 import Company from '../model/data/Company'
@@ -35,7 +34,13 @@ export default class O365Exporter {
   public static async start(task: Task, user: User) {
     this.task = task
     this.user = user
-    this.contacts = await DatabaseService.find('data', Contact)
+    this.contacts = (await (await DatabaseService.find('data', Contact)).filter(
+      (contact: Contact) => {
+        return contact.gender
+          ? contact.gender.uniquename !== 'juristisch'
+          : true
+      }
+    )) as Contact[]
     this.companies = await DatabaseService.find('data', Company)
     this.currentProgress = 0
     this.metrics = {
@@ -85,14 +90,13 @@ export default class O365Exporter {
       if (this.currentContactLookup.size) {
         this.task.maxProgress = this.currentContactLookup.size
         this.task.progress = 0
-        this.task.setStatusText(
-          this.task.progress + '/' + this.task.maxProgress + ' löschen'
-        )
 
         for (const currentContact of this.currentContactLookup) {
           this.metrics.deleted++
-
           this.task.progress++
+          this.task.setStatusText(
+            this.task.progress + '/' + this.task.maxProgress + ' löschen'
+          )
 
           await graph_deleteContact(
             currentContact[1].contact.id,

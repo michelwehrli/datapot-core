@@ -40,10 +40,6 @@ export default class DataImporter {
             dirtyContact[key] = dirtyContact[key].trim()
           }
 
-          if (dirtyContact['Geschlecht'] === 'juristisch') {
-            continue
-          }
-
           const categories: ICategory[] = []
           if (dirtyContact['Kategorien']) {
             dirtyContact['Kategorien'].split(';').forEach((cat) => {

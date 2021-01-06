@@ -7,6 +7,7 @@ import * as jwt from 'jsonwebtoken'
 import * as mime from 'mime-types'
 import { OIDCStrategy } from 'passport-azure-ad'
 
+import CSVExporter from '../abstraction/CSVExport'
 import DataImporter from '../abstraction/DataImporter'
 import O365Exporter from '../abstraction/O365Exporter'
 import SystemImporter from '../abstraction/SystemImporter'
@@ -406,7 +407,7 @@ export default class Router {
     )
 
     app.get(
-      '/api/:key/task/:name/:action',
+      '/api/:key/task/:name/:action/:filename?',
       this.auth,
       async (req: Request, res: Response, next: NextFunction) => {
         let result: IRestError | IRestSuccess
@@ -414,8 +415,10 @@ export default class Router {
         if (
           !req.params.action ||
           (req.params.name !== 'office-365-export' &&
-            req.params.name !== 'excel-export') ||
+            req.params.name !== 'csv-export') ||
           (req.params.action !== 'start' &&
+            req.params.action !== 'open' &&
+            req.params.action !== 'download' &&
             req.params.action !== 'stop' &&
             req.params.action !== 'status' &&
             req.params.action !== 'login')
@@ -475,26 +478,42 @@ export default class Router {
           }
         }
 
-        if (req.params.name === 'excel-export') {
-          if (req.params.action === 'start') {
+        if (req.params.name === 'csv-export') {
+          if (req.params.action === 'open') {
             result = {
               success: true,
               authorized: true,
               data: {
-                url: 'https://core.datapot.ch/download/excel',
+                url: `https://core.datapot.ch/api/123/task/csv-export/download/datapot-kontakte_${new Date().getFullYear()}${(
+                  '0' +
+                  new Date().getMonth() +
+                  1
+                ).slice(-2)}${('0' + new Date().getDate()).slice(-2)}${(
+                  '0' + new Date().getHours()
+                ).slice(-2)}${('0' + new Date().getMinutes()).slice(-2)}${(
+                  '0' + new Date().getSeconds()
+                ).slice(-2)}.csv`,
               },
             }
           }
         }
 
-        if (!result) {
-          result = {
-            success: true,
-            authorized: true,
+        if (req.params.action !== 'download') {
+          if (!result) {
+            result = {
+              success: true,
+              authorized: true,
+            }
           }
+          res.status(200).send(result).end()
+        } else {
+          res.header('Content-Type', 'text/csv')
+          res.charset = 'utf-8'
+          res
+            .status(200)
+            .send(await CSVExporter.getCSV())
+            .end()
         }
-
-        res.status(200).send(result).end()
       }
     )
 
