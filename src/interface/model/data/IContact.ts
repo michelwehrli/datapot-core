@@ -31,8 +31,7 @@ export default abstract class IContact {
     | ICompanyWithLocation[]
   abstract department?: string
   abstract positions?: string[]
-  abstract phonenumbers_business?: Collection<Phonenumber> | IPhonenumber[]
-  abstract phonenumbers_private?: Collection<Phonenumber> | IPhonenumber[]
+  abstract phonenumbers?: Collection<Phonenumber> | IPhonenumber[]
   abstract emails?: Collection<Email> | IEmail[]
   abstract birthdate?: number
   abstract partner?: IContact

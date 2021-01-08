@@ -5,6 +5,7 @@ import {
   ManyToMany,
   Collection,
   ManyToOne,
+  OneToOne,
 } from '@mikro-orm/core'
 import DataImporter from '../../abstraction/DataImporter'
 import ICompany from '../../interface/model/data/ICompany'
@@ -34,7 +35,7 @@ export default class Company extends Table implements ICompany {
   @ManyToMany(() => Phonenumber, null, { eager: true })
   phonenumbers = new Collection<Phonenumber>(this)
 
-  @ManyToOne(() => Contact, { eager: true })
+  @OneToOne(() => Contact)
   contact_person?: Contact
 
   @Property({ nullable: true })

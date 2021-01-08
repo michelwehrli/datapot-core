@@ -140,18 +140,15 @@ export default class O365Exporter {
     const mobilePhones: string[] = []
     const businessPhones: string[] = []
     const homePhones: string[] = []
-    c.phonenumbers_business.toArray().map((p: Phonenumber) => {
+    c.phonenumbers.toArray().map((p: Phonenumber) => {
       if (p.line.uniquename === 'mobile') {
         mobilePhones.push(p.number)
       } else {
-        businessPhones.push(p.number)
-      }
-    })
-    c.phonenumbers_private.toArray().map((p: Phonenumber) => {
-      if (p.line.uniquename === 'mobile') {
-        mobilePhones.push(p.number)
-      } else {
-        homePhones.push(p.number)
+        if (p.type.uniquename === 'business') {
+          businessPhones.push(p.number)
+        } else {
+          homePhones.push(p.number)
+        }
       }
     })
 

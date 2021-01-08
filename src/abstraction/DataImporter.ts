@@ -205,17 +205,6 @@ export default class DataImporter {
                     },
                   ]
                 : []),
-              ...(dirtyContact['E-Mail 2: Adresse']
-                ? [
-                    {
-                      address: dirtyContact['E-Mail 2: Adresse'],
-                      type: {
-                        uniquename: 'private',
-                        label: 'Privat',
-                      },
-                    },
-                  ]
-                : []),
               ...(dirtyContact['E-Mail 3: Adresse']
                 ? [
                     {
@@ -228,7 +217,7 @@ export default class DataImporter {
                   ]
                 : []),
             ],
-            phonenumbers_business: [
+            phonenumbers: [
               ...(dirtyContact['Telefon geschäftlich']
                 ? [
                     {
@@ -259,8 +248,6 @@ export default class DataImporter {
                     },
                   ]
                 : []),
-            ],
-            phonenumbers_private: [
               ...(dirtyContact['Telefon (privat)']
                 ? [
                     {

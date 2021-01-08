@@ -15,18 +15,15 @@ export default class CSVExporter {
       const mobilePhones: string[] = []
       const businessPhones: string[] = []
       const homePhones: string[] = []
-      contact.phonenumbers_business.toArray().map((p: Phonenumber) => {
+      contact.phonenumbers.toArray().map((p: Phonenumber) => {
         if (p.line.uniquename === 'mobile') {
           mobilePhones.push(p.number)
         } else {
-          businessPhones.push(p.number)
-        }
-      })
-      contact.phonenumbers_private.toArray().map((p: Phonenumber) => {
-        if (p.line.uniquename === 'mobile') {
-          mobilePhones.push(p.number)
-        } else {
-          homePhones.push(p.number)
+          if (p.type.uniquename === 'business') {
+            businessPhones.push(p.number)
+          } else {
+            homePhones.push(p.number)
+          }
         }
       })
 

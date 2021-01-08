@@ -59,10 +59,7 @@ export default class Contact extends Table implements IContact {
   positions?: string[]
 
   @ManyToMany(() => Phonenumber, null, { eager: true })
-  phonenumbers_business = new Collection<Phonenumber>(this)
-
-  @ManyToMany(() => Phonenumber, null, { eager: true })
-  phonenumbers_private = new Collection<Phonenumber>(this)
+  phonenumbers = new Collection<Phonenumber>(this)
 
   @ManyToMany(() => Email, null, { eager: true })
   emails = new Collection<Email>(this)
@@ -209,13 +206,13 @@ export default class Contact extends Table implements IContact {
 
     this.positions = data.positions
 
-    if (data.phonenumbers_business) {
+    if (data.phonenumbers) {
       if (clear) {
-        this.phonenumbers_business.removeAll()
+        this.phonenumbers.removeAll()
       }
-      for (const number of data.phonenumbers_business) {
+      for (const number of data.phonenumbers) {
         let found: Phonenumber = DataImporter.getCache(
-          'company/phonenumbers_business/' + JSON.stringify(number)
+          'company/phonenumbers/' + JSON.stringify(number)
         )
         if (!found && number.id) {
           found = await DatabaseService.findOne('data', Phonenumber, {
@@ -225,37 +222,12 @@ export default class Contact extends Table implements IContact {
         if (!found) {
           found = new Phonenumber()
           DataImporter.setCache(
-            'company/phonenumbers_business/' + JSON.stringify(number),
+            'company/phonenumbers/' + JSON.stringify(number),
             found
           )
         }
         found = await found.init(number)
-        this.phonenumbers_business.add(found)
-      }
-    }
-
-    if (data.phonenumbers_private) {
-      if (clear) {
-        this.phonenumbers_private.removeAll()
-      }
-      for (const number of data.phonenumbers_private) {
-        let found: Phonenumber = DataImporter.getCache(
-          'company/phonenumbers_private/' + JSON.stringify(number)
-        )
-        if (!found && number.id) {
-          found = await DatabaseService.findOne('data', Phonenumber, {
-            id: number.id,
-          })
-        }
-        if (!found) {
-          found = new Phonenumber()
-          DataImporter.setCache(
-            'company/phonenumbers_private/' + JSON.stringify(number),
-            found
-          )
-        }
-        found = await found.init(number)
-        this.phonenumbers_private.add(found)
+        this.phonenumbers.add(found)
       }
     }
 
@@ -437,13 +409,8 @@ export default class Contact extends Table implements IContact {
         label: 'Partner',
         type: Contact.getDatamodel(true),
       },
-      phonenumbers_business: {
-        label: 'Geschäftliche Telefonnummern',
-        multiple: true,
-        type: Phonenumber.getDatamodel(),
-      },
-      phonenumbers_private: {
-        label: 'Private Telefonnummern',
+      phonenumbers: {
+        label: 'Telefonnummern',
         multiple: true,
         type: Phonenumber.getDatamodel(),
       },
