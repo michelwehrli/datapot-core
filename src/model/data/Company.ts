@@ -47,6 +47,11 @@ export default class Company extends Table implements ICompany {
     super()
   }
 
+  public toJSON() {
+    this.addresses.init()
+    return this
+  }
+
   async init(data: ICompany, clear?: boolean) {
     if (!data) {
       data = {}

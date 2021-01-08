@@ -15,6 +15,7 @@ import { AllEntities } from '../constants/Entities'
 import { ETypeIdentifier } from '../enums/ETypeIdentifier'
 import { ETypeMatch } from '../enums/ETypeMatch'
 import IUser from '../interface/model/system/IUser'
+import Contact from '../model/data/Contact'
 import Task from '../model/internal/Task'
 import User from '../model/system/User'
 import { graph_setUserForO365, graph_signInComplete } from '../o365/graph'
@@ -43,6 +44,7 @@ export default class Router {
         number: 4,
         sort: 2,
         title: 'Projektreferenzen',
+        superOnly: true,
       },
     },
     group2: {
@@ -279,6 +281,31 @@ export default class Router {
           }
           return res.status(401).send(result).end()
         }
+
+        res.status(200).send(result).end()
+      }
+    )
+
+    app.get(
+      '/api/:key/special/employees/:companyId',
+      this.auth,
+      async (req: Request, res: Response, next: NextFunction) => {
+        const result = {
+          success: true,
+          authorized: true,
+          data: {},
+        }
+
+        const contacts: Contact[] = await DatabaseService.find('data', Contact)
+
+        result.data = contacts.filter((contact) => {
+          let match = false
+          for (const cwl of contact.companiesWithLocation) {
+            if (match) return
+            match = cwl.company.id === parseInt(req.params.companyId)
+          }
+          return match
+        })
 
         res.status(200).send(result).end()
       }

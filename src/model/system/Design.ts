@@ -34,6 +34,7 @@ export default class Design extends Table implements IDesign {
         isListable: true,
         parent: 3,
         sort: 'label',
+        superOnly: true,
       },
       uniquename: {
         label: 'Eindeutiger Name',
@@ -43,6 +44,7 @@ export default class Design extends Table implements IDesign {
       label: {
         label: 'Bezeichnung',
         type: 'string',
+        required: true,
       },
     }
   }
