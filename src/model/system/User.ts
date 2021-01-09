@@ -74,8 +74,6 @@ export default class User extends Table implements IUser {
     this.email = data.email
     this.color = data.color
     this.configuration = data.configuration
-    this.o365_oauth_token = data.o365_oauth_token
-    this.o365_oaccess_token = data.o365_oaccess_token
 
     if (data.image && Object.keys(data.image).length) {
       const existingImage: Document = await DatabaseService.findOne(
@@ -96,8 +94,14 @@ export default class User extends Table implements IUser {
       const hash = bcrypt.hashSync(data.password, 10)
       this.password = hash
     }
-    if (this.refresh_token) {
+    if (data.refresh_token) {
       this.refresh_token = data.refresh_token
+    }
+    if (data.o365_oaccess_token) {
+      this.refresh_token = data.o365_oaccess_token
+    }
+    if (data.o365_oauth_token) {
+      this.refresh_token = data.o365_oauth_token
     }
 
     if (data.design && Object.keys(data.design).length) {

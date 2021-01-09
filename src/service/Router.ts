@@ -1,4 +1,4 @@
-import { MikroORM, RequestContext } from '@mikro-orm/core'
+import { MikroORM, RequestContext, wrap } from '@mikro-orm/core'
 import bcrypt from 'bcrypt'
 import { Express } from 'express'
 import { NextFunction, Request, Response } from 'express'
@@ -553,42 +553,53 @@ export default class Router {
         let success = false
         let authorized = false
         let user: User
+        let error: string
         let iuser: IUser = req.body
 
-        if (iuser && iuser.username && iuser.password) {
-          user = await DatabaseService.findOne('system', User, {
-            username: iuser.username,
-          })
-          if (user) {
-            const valid = bcrypt.compareSync(iuser.password, user.password)
-            if (valid) {
-              const payload = { id: user.id }
+        try {
+          if (iuser && iuser.username && iuser.password) {
+            user = await DatabaseService.findOne('system', User, {
+              username: iuser.username,
+            })
+            if (user) {
+              const valid = bcrypt.compareSync(iuser.password, user.password)
+              if (valid) {
+                const payload = { id: user.id }
 
-              const token = jwt.sign(
-                payload,
-                process.env.DATAPOT_TOKEN_SECRET,
-                {
-                  algorithm: 'HS256',
-                  expiresIn: `${process.env.DATAPOT_TOKEN_LIFE}s`,
-                }
-              )
+                const token = jwt.sign(
+                  payload,
+                  process.env.DATAPOT_TOKEN_SECRET,
+                  {
+                    algorithm: 'HS256',
+                    expiresIn: `${process.env.DATAPOT_TOKEN_LIFE}s`,
+                  }
+                )
 
-              user.refresh_token = token
-              await DatabaseService.insert('system', [user])
+                user.refresh_token = token
+                await DatabaseService.insert('system', [user])
 
-              res.cookie(process.env.DATAPOT_SESSION_COOKIE_NAME, token, {
-                secure: true,
-                httpOnly: true,
-              })
-              success = true
-              authorized = true
+                res.cookie(process.env.DATAPOT_SESSION_COOKIE_NAME, token, {
+                  secure: true,
+                  httpOnly: true,
+                })
+                success = true
+                authorized = true
+              } else {
+                user = undefined
+                error = 'password invalid'
+              }
+            } else {
+              user = undefined
             }
           }
+        } catch (exc) {
+          error = exc.message
         }
 
         res.send({
           success: success,
           authorized: authorized,
+          error: error,
           user: user,
         })
       }
