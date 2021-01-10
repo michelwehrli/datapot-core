@@ -59,8 +59,8 @@ export default class Document extends Table implements IDocument {
       const file = `${id}.${filetype}`
       const previewFile = `${id}_thumb.${filetype}`
       const filePath = `${path}/${file}`
-      this.url = `https://core.datapot.ch/document/${filetype}/${file}`
-      this.previewUrl = `https://core.datapot.ch/thumbnail/${filetype}/${previewFile}`
+      this.url = `https://new-core.datapot.ch/document/${filetype}/${file}`
+      this.previewUrl = `https://new-core.datapot.ch/thumbnail/${filetype}/${previewFile}`
 
       if (!fs.existsSync(path)) {
         shell.mkdir('-p', path)

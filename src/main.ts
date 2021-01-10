@@ -28,7 +28,7 @@ app.use(
 )
 app.use(
   cors({
-    origin: 'https://new-crm.datapot.ch:4000',
+    origin: 'https://new-crm.datapot.ch',
     credentials: true,
   })
 )

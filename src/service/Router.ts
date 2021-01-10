@@ -1,4 +1,4 @@
-import { MikroORM, RequestContext, wrap } from '@mikro-orm/core'
+import { MikroORM, RequestContext } from '@mikro-orm/core'
 import bcrypt from 'bcrypt'
 import { Express } from 'express'
 import { NextFunction, Request, Response } from 'express'
@@ -474,7 +474,7 @@ export default class Router {
               success: true,
               authorized: true,
               data: {
-                redirectTo: 'https://core.datapot.ch/o365/signin',
+                redirectTo: 'https://new-core.datapot.ch/o365/signin',
               },
             }
           }
@@ -511,7 +511,7 @@ export default class Router {
               success: true,
               authorized: true,
               data: {
-                url: `https://core.datapot.ch/api/123/task/csv-export/download/datapot-kontakte_${new Date().getFullYear()}${(
+                url: `https://new-core.datapot.ch/api/123/task/csv-export/download/datapot-kontakte_${new Date().getFullYear()}${(
                   '0' +
                   new Date().getMonth() +
                   1
@@ -678,9 +678,9 @@ export default class Router {
         graph_setUserForO365(res.locals.user, users)
         passport.authenticate('azuread-openidconnect', {
           reponse: res,
-          failureRedirect: 'https://new-crm.datapot.ch:4000/crm/export',
+          failureRedirect: 'https://new-crm.datapot.ch/crm/export',
           failureFlash: false,
-          successRedirect: 'https://new-crm.datapot.ch:4000/crm/export',
+          successRedirect: 'https://new-crm.datapot.ch/crm/export',
         })(req, res, next)
       }
     )

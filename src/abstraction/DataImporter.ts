@@ -6,7 +6,7 @@ import IContact from '../interface/model/data/IContact'
 import Contact from '../model/data/Contact'
 import DatabaseService from '../service/DatabaseService'
 
-const IMPORT_FILE_PATH = '../../res/excel_export_utf8.csv'
+const IMPORT_FILE_PATH = '../../res/excel_export_utf8.CSV'
 
 export default class DataImporter {
   constructor() {}
