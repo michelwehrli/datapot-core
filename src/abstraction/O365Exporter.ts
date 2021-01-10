@@ -104,7 +104,7 @@ export default class O365Exporter {
             (message: string) => {
               Logger.log(
                 'o365-export',
-                `${new Date().toLocaleTimeString('ch-DE', {
+                `${new Date().toLocaleTimeString('de-CH', {
                   year: 'numeric',
                   month: '2-digit',
                   day: '2-digit',
@@ -154,7 +154,7 @@ export default class O365Exporter {
 
     const o365Contact: IO365Contact = {
       ...(c.birthdate && {
-        birthday: new Date(c.birthdate).toISOString(),
+        birthday: O365Exporter.toLocalISOString(new Date(c.birthdate)),
       }),
       ...(c.companiesWithLocation &&
         c.companiesWithLocation.length &&
@@ -270,7 +270,7 @@ export default class O365Exporter {
             removeError = true
             Logger.log(
               'o365-export',
-              `${new Date().toLocaleTimeString('ch-DE', {
+              `${new Date().toLocaleTimeString('de-CH', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit',
@@ -303,7 +303,7 @@ export default class O365Exporter {
           (message: string) => {
             Logger.log(
               'o365-export',
-              `${new Date().toLocaleTimeString('ch-DE', {
+              `${new Date().toLocaleTimeString('de-CH', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit',
@@ -405,7 +405,7 @@ export default class O365Exporter {
             removeError = true
             Logger.log(
               'o365-export',
-              `${new Date().toLocaleTimeString('ch-DE', {
+              `${new Date().toLocaleTimeString('de-CH', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit',
@@ -438,7 +438,7 @@ export default class O365Exporter {
           (message: string) => {
             Logger.log(
               'o365-export',
-              `${new Date().toLocaleTimeString('ch-DE', {
+              `${new Date().toLocaleTimeString('de-CH', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit',
@@ -476,6 +476,19 @@ export default class O365Exporter {
 
   public static getMetrics(): IMetrics {
     return this.metrics
+  }
+
+  private static toLocalISOString(date: Date) {
+    const off = date.getTimezoneOffset()
+    return new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      date.getHours(),
+      date.getMinutes() - off,
+      date.getSeconds(),
+      date.getMilliseconds()
+    ).toISOString()
   }
 }
 

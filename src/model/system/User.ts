@@ -104,7 +104,11 @@ export default class User extends Table implements IUser {
       this.refresh_token = data.o365_oauth_token
     }
 
-    if (data.design && Object.keys(data.design).length) {
+    if (
+      data.design &&
+      Object.keys(data.design) &&
+      Object.keys(data.design).length
+    ) {
       const existingDesign: Design = await DatabaseService.findOne(
         'system',
         Design,

@@ -12,7 +12,6 @@ export default class SystemImporter {
         issuperuser: true,
         givenname: 'Michel',
         surname: 'Wehrli',
-        email: 'michel@wehrli.me',
         password: '123',
         design: {
           uniquename: 'dark',
@@ -24,7 +23,6 @@ export default class SystemImporter {
         issuperuser: false,
         givenname: 'Ralph',
         surname: 'Wehrli',
-        email: 'ralph.wehrli@3pmw.ch',
         password: '123',
         design: {
           uniquename: 'light',
@@ -36,7 +34,6 @@ export default class SystemImporter {
         issuperuser: false,
         givenname: 'Kathrin',
         surname: 'Meier',
-        email: 'kathrin.meier@3pmw.ch',
         password: '123',
         design: {
           uniquename: 'light',

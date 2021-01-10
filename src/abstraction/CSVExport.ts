@@ -151,7 +151,7 @@ export default class CSVExporter {
         contact.websites && contact.websites[0] ? contact.websites[0] : ''
       };;;;;;;${
         contact.birthdate
-          ? new Date(contact.birthdate).toLocaleDateString('ch-DE', {
+          ? new Date(contact.birthdate).toLocaleDateString('de-CH', {
               year: 'numeric',
               month: '2-digit',
               day: '2-digit',

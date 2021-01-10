@@ -347,6 +347,7 @@ export default class Router {
             data: obj,
           }
         } catch (exc) {
+          console.log(exc.message, exc.stack)
           result = {
             success: false,
             authorized: true,
