@@ -160,21 +160,27 @@ export default class O365Exporter {
         c.companiesWithLocation.length &&
         c.companiesWithLocation[0] && {
           businessAddress: {
-            ...(c.companiesWithLocation[0].address.zip && {
-              city: c.companiesWithLocation[0].address.zip.location,
-            }),
-            ...(c.companiesWithLocation[0].address.country && {
-              countryOrRegion: c.companiesWithLocation[0].address.country.label,
-            }),
-            ...(c.companiesWithLocation[0].address.zip && {
-              postalCode: c.companiesWithLocation[0].address.zip.zip,
-            }),
-            ...(c.companiesWithLocation[0].address.county && {
-              state: c.companiesWithLocation[0].address.county.label,
-            }),
-            ...(c.companiesWithLocation[0].address && {
-              street: c.companiesWithLocation[0].address.street,
-            }),
+            ...(c.companiesWithLocation[0].address &&
+              c.companiesWithLocation[0].address.zip && {
+                city: c.companiesWithLocation[0].address.zip.location,
+              }),
+            ...(c.companiesWithLocation[0].address &&
+              c.companiesWithLocation[0].address.country && {
+                countryOrRegion:
+                  c.companiesWithLocation[0].address.country.label,
+              }),
+            ...(c.companiesWithLocation[0].address &&
+              c.companiesWithLocation[0].address.zip && {
+                postalCode: c.companiesWithLocation[0].address.zip.zip,
+              }),
+            ...(c.companiesWithLocation[0].address &&
+              c.companiesWithLocation[0].address.county && {
+                state: c.companiesWithLocation[0].address.county.label,
+              }),
+            ...(c.companiesWithLocation[0].address &&
+              c.companiesWithLocation[0].address && {
+                street: c.companiesWithLocation[0].address.street,
+              }),
           },
         }),
       ...(c.websites &&

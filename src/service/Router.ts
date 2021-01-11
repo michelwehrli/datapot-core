@@ -301,7 +301,7 @@ export default class Router {
         result.data = contacts.filter((contact) => {
           let match = false
           for (const cwl of contact.companiesWithLocation) {
-            if (match) return
+            if (match || !cwl.company) return
             match = cwl.company.id === parseInt(req.params.companyId)
           }
           return match
