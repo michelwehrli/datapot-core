@@ -100,6 +100,8 @@ export default class Router {
       await new SystemImporter().init()
     }
 
+    await DatabaseService.updateSchema('data')
+
     app.use((req: Request, res: Response, next: NextFunction) => {
       RequestContext.create([dataOrm.em], next)
     })
@@ -175,25 +177,33 @@ export default class Router {
     app.get(
       '/document/:dir/:file',
       (req: Request, res: Response, next: NextFunction) => {
-        const file = fs.readFileSync(
-          `../../build/files/__fullsize/${req.params.dir}/${req.params.file}`
-        )
-        if (mime.lookup(req.params.dir)) {
-          res.setHeader('Content-Type', <string>mime.lookup(req.params.dir))
+        try {
+          const file = fs.readFileSync(
+            `../../build/files/__fullsize/${req.params.dir}/${req.params.file}`
+          )
+          if (mime.lookup(req.params.dir)) {
+            res.setHeader('Content-Type', <string>mime.lookup(req.params.dir))
+          }
+          res.end(file)
+        } catch (exc) {
+          res.status(404).end()
         }
-        res.end(file)
       }
     )
     app.get(
       '/thumbnail/:dir/:file',
       (req: Request, res: Response, next: NextFunction) => {
-        const file = fs.readFileSync(
-          `../../build/files/__thumbnail/${req.params.dir}/${req.params.file}`
-        )
-        if (mime.lookup(req.params.dir)) {
-          res.setHeader('Content-Type', <string>mime.lookup(req.params.dir))
+        try {
+          const file = fs.readFileSync(
+            `../../build/files/__thumbnail/${req.params.dir}/${req.params.file}`
+          )
+          if (mime.lookup(req.params.dir)) {
+            res.setHeader('Content-Type', <string>mime.lookup(req.params.dir))
+          }
+          res.end(file)
+        } catch (exc) {
+          res.status(404).end()
         }
-        res.end(file)
       }
     )
 

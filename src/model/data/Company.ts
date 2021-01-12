@@ -12,9 +12,12 @@ import ICompany from '../../interface/model/data/ICompany'
 import DatabaseService from '../../service/DatabaseService'
 import Table from '../extends/Table'
 import Address from './Address'
+import Category from './Category'
 import Contact from './Contact'
 import Email from './Email'
 import Phonenumber from './Phonenumber'
+import Relationship from './Relationship'
+import RWStatus from './RWStatus'
 
 @Entity()
 export default class Company extends Table implements ICompany {
@@ -43,6 +46,15 @@ export default class Company extends Table implements ICompany {
 
   @Property({ nullable: true })
   remarks?: string
+
+  @ManyToOne(() => RWStatus, { eager: true })
+  rwstatus?: RWStatus
+
+  @ManyToOne(() => Relationship, { eager: true })
+  relationship?: Relationship
+
+  @ManyToMany(() => Category, null, { eager: true })
+  categories = new Collection<Category>(this)
 
   constructor() {
     super()
@@ -149,6 +161,61 @@ export default class Company extends Table implements ICompany {
     this.websites = data.websites
     this.remarks = data.remarks
 
+    if (data && data.rwstatus && data.rwstatus.uniquename) {
+      const existingRWStatus: RWStatus = await DatabaseService.findOne(
+        'data',
+        RWStatus,
+        {
+          uniquename: data.rwstatus.uniquename,
+        }
+      )
+      this.rwstatus = existingRWStatus
+        ? existingRWStatus
+        : await new RWStatus().init(data.rwstatus)
+    } else {
+      this.rwstatus = undefined
+    }
+
+    if (data && data.relationship && data.relationship.uniquename) {
+      const existingRelationship: Relationship = await DatabaseService.findOne(
+        'data',
+        Relationship,
+        {
+          uniquename: data.relationship.uniquename,
+        }
+      )
+      this.relationship = existingRelationship
+        ? existingRelationship
+        : await new Relationship().init(data.relationship)
+    } else {
+      this.relationship = undefined
+    }
+
+    if (data.categories) {
+      if (clear) {
+        this.categories.removeAll()
+      }
+      for (const category of data.categories) {
+        let found: Category = DataImporter.getCache(
+          'company/categories/' + JSON.stringify(category)
+        )
+        if (!found && category.uniquename) {
+          found = await DatabaseService.findOne('data', Category, {
+            uniquename: category.uniquename,
+          })
+        }
+        if (!found) {
+          found = new Category()
+          DataImporter.setCache(
+            'company/categories/' + JSON.stringify(category),
+            found
+          )
+        }
+        found = await found.init(category)
+        this.categories.add(found)
+      }
+    }
+
     return this
   }
 
@@ -203,6 +270,19 @@ export default class Company extends Table implements ICompany {
       remarks: {
         label: 'Bemerkungen',
         type: 'string',
+      },
+      rwstatus: {
+        label: 'RW-Status',
+        type: RWStatus.getDatamodel(),
+      },
+      relationship: {
+        label: 'Beziehung',
+        type: Relationship.getDatamodel(),
+      },
+      categories: {
+        label: 'Kategorien',
+        multiple: true,
+        type: Category.getDatamodel(),
       },
     }
   }

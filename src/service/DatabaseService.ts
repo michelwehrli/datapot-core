@@ -25,6 +25,11 @@ export default class DatabaseService {
     await generator.createSchema()
   }
 
+  public static async updateSchema(name: string): Promise<void> {
+    const generator = this.getOrm(name).getSchemaGenerator()
+    await generator.updateSchema()
+  }
+
   public static async insert<T>(name: string, items: T[]): Promise<any> {
     return await this.getOrm(name).em.persistAndFlush(items)
   }
