@@ -255,7 +255,7 @@ export default class Router {
               }
             }
           )
-          if (secureFields) {
+          if (secureFields && secureFields.length) {
             if (dbresult.forEach) {
               dbresult.forEach((entry) => {
                 secureFields.forEach((secureField) => {
@@ -283,6 +283,8 @@ export default class Router {
             }
           }
         } catch (exc) {
+          console.error(exc)
+
           result = {
             success: false,
             authorized: true,
