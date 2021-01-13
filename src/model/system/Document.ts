@@ -84,16 +84,6 @@ export default class Document extends Table implements IDocument {
     }
   }
 
-  public toJSON() {
-    return <IDocument>{
-      id: this.id,
-      name: this.name,
-      issecure: this.issecure,
-      url: this.url,
-      previewUrl: this.previewUrl,
-    }
-  }
-
   public static getDatamodel() {
     return {
       __meta: {

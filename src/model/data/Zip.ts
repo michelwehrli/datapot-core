@@ -27,14 +27,6 @@ export default class Zip extends Table implements IZip {
     return this
   }
 
-  public toJSON() {
-    return {
-      id: this.id,
-      zip: this.zip,
-      location: this.location,
-    }
-  }
-
   public static getDatamodel() {
     return {
       __meta: {
