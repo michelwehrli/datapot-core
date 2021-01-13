@@ -230,7 +230,7 @@ export default class O365Exporter {
       givenName: c.givenname || '',
       ...(homePhones &&
         homePhones.length > 0 && {
-          homePhones: homePhones,
+          homePhones: homePhones.slice(0, 2),
         }),
       ...(c.addresses &&
         c.addresses.length &&
