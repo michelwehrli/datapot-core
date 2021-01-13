@@ -6,6 +6,7 @@ import * as fs from 'fs'
 import * as jwt from 'jsonwebtoken'
 import * as mime from 'mime-types'
 import { OIDCStrategy } from 'passport-azure-ad'
+import Backupper from '../abstraction/Backupper'
 
 import CSVExporter from '../abstraction/CSVExport'
 import DataImporter from '../abstraction/DataImporter'
@@ -64,13 +65,13 @@ export default class Router {
         additionalItems: [
           {
             __meta: {
-              icon: 'fa fa-file-export',
+              icon: 'fa fa-cog',
               isListable: true,
-              name: 'export',
+              name: 'tasks',
               parent: 3,
-              title: 'Export',
-              titlePlural: 'Export',
-              navigate: 'crm/export',
+              title: 'Task',
+              titlePlural: 'Tasks',
+              navigate: 'crm/tasks',
             },
           },
         ],
@@ -457,7 +458,8 @@ export default class Router {
         if (
           !req.params.action ||
           (req.params.name !== 'office-365-export' &&
-            req.params.name !== 'csv-export') ||
+            req.params.name !== 'csv-export' &&
+            req.params.name !== 'ftp-backup') ||
           (req.params.action !== 'start' &&
             req.params.action !== 'open' &&
             req.params.action !== 'download' &&
@@ -502,6 +504,7 @@ export default class Router {
                 errorMessage: 'not logged in',
               }
             } else {
+              const metrics = O365Exporter.getMetrics()
               result = {
                 success: true,
                 authorized: true,
@@ -512,14 +515,41 @@ export default class Router {
                     0,
                   current: task.progress,
                   max: task.maxProgress,
-                  metrics: O365Exporter.getMetrics(),
+                  metrics: metrics
+                    ? `Der Task "[[title]]" wurde erfolgreich abgeschlossen. Hier die Zusammenfassung:\n\nUnverändert: ${metrics.skipped}\nHinzugefügt: ${metrics.added}\nAktualisiert: ${metrics.updated}\nEntfernt: ${metrics.deleted}\nFehler: ${metrics.errored}\n\nKontakte im Datapot: ${metrics.serverCount}\nKontakte auf Office 365: ${metrics.o365Count}`
+                    : '',
                   statusText: task.statusText,
                 },
               }
             }
           }
         }
+        if (req.params.name === 'ftp-backup') {
+          const task: Task = TaskManager.get('ftp-backup')
 
+          if (req.params.action === 'start') {
+            task.start()
+            await Backupper.start(task, res.locals.user)
+          }
+          if (req.params.action === 'stop') {
+            Backupper.stop()
+          }
+          if (req.params.action === 'status') {
+            result = {
+              success: true,
+              authorized: true,
+              data: {
+                running: task.running,
+                progress:
+                  Math.min((100 / task.maxProgress) * task.progress, 100) || 0,
+                current: task.progress,
+                max: task.maxProgress,
+                metrics: 'Die Datenbank wurde erfolgreich gesichert.',
+                statusText: task.statusText,
+              },
+            }
+          }
+        }
         if (req.params.name === 'csv-export') {
           if (req.params.action === 'open') {
             result = {

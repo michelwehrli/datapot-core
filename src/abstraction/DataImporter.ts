@@ -1,4 +1,3 @@
-import { ConstraintViolationException } from '@mikro-orm/core'
 import csv from 'csv-parser'
 import * as fs from 'fs'
 import ICategory from '../interface/model/data/ICategory'
