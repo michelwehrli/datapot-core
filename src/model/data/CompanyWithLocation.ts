@@ -45,7 +45,7 @@ export default class CompanyWithLocation extends Table
         'companywithlocation/company/' + data.company.name,
         found
       )
-      found = await found.init(data.company)
+      found = await found.init(data.company, clear)
       this.company = found
     }
 

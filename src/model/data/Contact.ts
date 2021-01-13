@@ -147,7 +147,7 @@ export default class Contact extends Table implements IContact {
       }
       for (const address of data.addresses) {
         let found: Address = DataImporter.getCache(
-          'company/addresses/' + JSON.stringify(address)
+          'contact/addresses/' + JSON.stringify(address)
         )
         if (!found && address.id) {
           found = await DatabaseService.findOne('data', Address, {
@@ -157,7 +157,7 @@ export default class Contact extends Table implements IContact {
         if (!found) {
           found = new Address()
           DataImporter.setCache(
-            'company/addresses/' + JSON.stringify(address),
+            'contact/addresses/' + JSON.stringify(address),
             found
           )
         }
@@ -181,7 +181,7 @@ export default class Contact extends Table implements IContact {
       }
       for (const companyWithLocation of data.companiesWithLocation) {
         let found: CompanyWithLocation = DataImporter.getCache(
-          `company/companieswithlocation/${JSON.stringify(companyWithLocation)}`
+          `contact/companieswithlocation/${JSON.stringify(companyWithLocation)}`
         )
         if (!found && companyWithLocation.id) {
           found = await DatabaseService.findOne('data', CompanyWithLocation, {
@@ -191,7 +191,7 @@ export default class Contact extends Table implements IContact {
         if (!found) {
           found = new CompanyWithLocation()
           DataImporter.setCache(
-            `company/companieswithlocation/${JSON.stringify(
+            `contact/companieswithlocation/${JSON.stringify(
               companyWithLocation
             )}`,
             found
@@ -212,7 +212,7 @@ export default class Contact extends Table implements IContact {
       }
       for (const number of data.phonenumbers) {
         let found: Phonenumber = DataImporter.getCache(
-          'company/phonenumbers/' + JSON.stringify(number)
+          'contact/phonenumbers/' + JSON.stringify(number)
         )
         if (!found && number.id) {
           found = await DatabaseService.findOne('data', Phonenumber, {
@@ -222,7 +222,7 @@ export default class Contact extends Table implements IContact {
         if (!found) {
           found = new Phonenumber()
           DataImporter.setCache(
-            'company/phonenumbers/' + JSON.stringify(number),
+            'contact/phonenumbers/' + JSON.stringify(number),
             found
           )
         }
@@ -237,7 +237,7 @@ export default class Contact extends Table implements IContact {
       }
       for (const email of data.emails) {
         let found: Email = DataImporter.getCache(
-          'company/emails/' + JSON.stringify(email)
+          'contact/emails/' + JSON.stringify(email)
         )
         if (!found && email.id) {
           found = await DatabaseService.findOne('data', Email, { id: email.id })
@@ -245,7 +245,7 @@ export default class Contact extends Table implements IContact {
         if (!found) {
           found = new Email()
           DataImporter.setCache(
-            'company/emails/' + JSON.stringify(email),
+            'contact/emails/' + JSON.stringify(email),
             found
           )
         }
@@ -264,7 +264,7 @@ export default class Contact extends Table implements IContact {
       }
       for (const sm of data.social_medias) {
         let found: Socialmedia = DataImporter.getCache(
-          'company/social_medias/' + JSON.stringify(sm)
+          'contact/social_medias/' + JSON.stringify(sm)
         )
         if (!found && sm.id) {
           found = await DatabaseService.findOne('data', Socialmedia, {
@@ -274,7 +274,7 @@ export default class Contact extends Table implements IContact {
         if (!found) {
           found = new Socialmedia()
           DataImporter.setCache(
-            'company/social_medias/' + JSON.stringify(sm),
+            'contact/social_medias/' + JSON.stringify(sm),
             found
           )
         }
@@ -317,7 +317,7 @@ export default class Contact extends Table implements IContact {
       }
       for (const category of data.categories) {
         let found: Category = DataImporter.getCache(
-          'company/categories/' + JSON.stringify(category)
+          'contact/categories/' + JSON.stringify(category)
         )
         if (!found && category.uniquename) {
           found = await DatabaseService.findOne('data', Category, {
@@ -327,7 +327,7 @@ export default class Contact extends Table implements IContact {
         if (!found) {
           found = new Category()
           DataImporter.setCache(
-            'company/categories/' + JSON.stringify(category),
+            'contact/categories/' + JSON.stringify(category),
             found
           )
         }

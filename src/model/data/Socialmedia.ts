@@ -40,14 +40,15 @@ export default class Socialmedia extends Table implements ISocialmedia {
       }
       this.type = existingType
         ? existingType
-        : DataImporter.getCache('socialmedia/' + JSON.stringify(data.type))
-        ? DataImporter.getCache('socialmedia/' + JSON.stringify(data.type))
+        : DataImporter.getCache('socialmedia/type/' + JSON.stringify(data.type))
+        ? DataImporter.getCache('socialmedia/type/' + JSON.stringify(data.type))
         : await new SocialmediaType().init(data.type)
       DataImporter.setCache(
-        'socialmedia/' + JSON.stringify(data.type),
+        'socialmedia/type/' + JSON.stringify(data.type),
         this.type
       )
     }
+
     return this
   }
 

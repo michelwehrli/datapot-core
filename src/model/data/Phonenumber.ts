@@ -76,17 +76,6 @@ export default class Phonenumber extends Table implements IPhonenumber {
     return this
   }
 
-  public toJSON() {
-    return <Phonenumber>{
-      id: this.id,
-      _creation_date: this._creation_date,
-      _modification_date: this._modification_date,
-      line: this.line,
-      number: this.number,
-      type: this.type,
-    }
-  }
-
   public static getDatamodel() {
     return {
       __meta: {

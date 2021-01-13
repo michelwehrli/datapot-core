@@ -242,6 +242,8 @@ export default class Router {
             where
           )
 
+          await new ETypeMatch[req.params.table]().init(dbresult, true)
+
           const secureFields = []
           Object.keys(ETypeMatch[req.params.table].getDatamodel()).forEach(
             (fieldName) => {

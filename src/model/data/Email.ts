@@ -18,8 +18,6 @@ export default class Email extends Table implements IEmail {
   })
   type: EmailType
 
-  private cache = {}
-
   constructor() {
     super()
   }
@@ -34,29 +32,24 @@ export default class Email extends Table implements IEmail {
     this.address = data.address
 
     if (data && data.type && data.type.uniquename) {
-      const existingType: EmailType = await DatabaseService.findOne(
-        'data',
-        EmailType,
-        {
+      let existingType: EmailType
+      if (data && data.type) {
+        existingType = await DatabaseService.findOne('data', EmailType, {
           uniquename: data.type.uniquename,
-        }
-      )
+        })
+      }
       this.type = existingType
         ? existingType
-        : DataImporter.getCache('email/' + JSON.stringify(data.type))
-        ? DataImporter.getCache('email/' + JSON.stringify(data.type))
+        : DataImporter.getCache('email/type/' + JSON.stringify(data.type))
+        ? DataImporter.getCache('email/type/' + JSON.stringify(data.type))
         : await new EmailType().init(data.type)
-      DataImporter.setCache('email/' + JSON.stringify(data.type), this.type)
+      DataImporter.setCache(
+        'email/type/' + JSON.stringify(data.type),
+        this.type
+      )
     }
-    return this
-  }
 
-  public toJSON() {
-    return <IEmail>{
-      id: this.id,
-      address: this.address,
-      type: this.type,
-    }
+    return this
   }
 
   public static getDatamodel() {

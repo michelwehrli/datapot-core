@@ -18,6 +18,7 @@ import Email from './Email'
 import Phonenumber from './Phonenumber'
 import Relationship from './Relationship'
 import RWStatus from './RWStatus'
+import Socialmedia from './Socialmedia'
 
 @Entity()
 export default class Company extends Table implements ICompany {
@@ -43,6 +44,9 @@ export default class Company extends Table implements ICompany {
 
   @Property({ nullable: true })
   websites?: string[]
+
+  @ManyToMany(() => Socialmedia, null, { eager: true })
+  social_medias = new Collection<Socialmedia>(this)
 
   @Property({ nullable: true })
   remarks?: string
@@ -123,6 +127,7 @@ export default class Company extends Table implements ICompany {
         this.emails.add(found)
       }
     }
+    console.log(clear, this.emails.length)
 
     if (data.phonenumbers) {
       if (clear) {
@@ -159,6 +164,32 @@ export default class Company extends Table implements ICompany {
     }
 
     this.websites = data.websites
+
+    if (data.social_medias) {
+      if (clear) {
+        this.social_medias.removeAll()
+      }
+      for (const sm of data.social_medias) {
+        let found: Socialmedia = DataImporter.getCache(
+          'company/social_medias/' + JSON.stringify(sm)
+        )
+        if (!found && sm.id) {
+          found = await DatabaseService.findOne('data', Socialmedia, {
+            id: sm.id,
+          })
+        }
+        if (!found) {
+          found = new Socialmedia()
+          DataImporter.setCache(
+            'company/social_medias/' + JSON.stringify(sm),
+            found
+          )
+        }
+        found = await found.init(sm)
+        this.social_medias.add(found)
+      }
+    }
+
     this.remarks = data.remarks
 
     if (data && data.rwstatus && data.rwstatus.uniquename) {
@@ -266,6 +297,11 @@ export default class Company extends Table implements ICompany {
         label: 'Webseiten',
         multiple: true,
         type: 'string',
+      },
+      social_medias: {
+        label: 'Socialmedia',
+        multiple: true,
+        type: Socialmedia.getDatamodel(),
       },
       remarks: {
         label: 'Bemerkungen',
