@@ -152,7 +152,24 @@ export default class O365Exporter {
       }
     })
 
+    let fileAs = []
+    if (c.givenname) {
+      fileAs.push(c.givenname)
+    }
+    if (c.surname) {
+      fileAs.push(c.surname)
+    }
+    if (
+      c.companiesWithLocation &&
+      c.companiesWithLocation[0] &&
+      c.companiesWithLocation[0].company &&
+      c.companiesWithLocation[0].company.name
+    ) {
+      fileAs.push(`(${c.companiesWithLocation[0].company.name})`)
+    }
+
     const o365Contact: IO365Contact = {
+      fileAs: fileAs.length ? fileAs.join(' ') : '',
       ...(c.birthdate && {
         birthday: O365Exporter.toLocalISOString(new Date(c.birthdate)),
       }),
@@ -346,6 +363,7 @@ export default class O365Exporter {
     const c: Company = this.companies[index]
 
     const o365Contact: IO365Contact = {
+      fileAs: c.name ? c.name : '',
       ...(c.websites &&
         c.websites.length > 0 && { businessHomepage: c.websites[0] }),
       ...(c.phonenumbers &&
