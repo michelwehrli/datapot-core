@@ -149,7 +149,7 @@ export default class O365Exporter {
   private static async iterateContacts(index: number = 0) {
     this.task.reportProgress(++this.currentProgress)
     this.task.setStatusText(
-      this.task.progress + '/' + this.task.maxProgress + ' importieren'
+      this.task.progress + '/' + this.task.maxProgress + ' exportieren'
     )
 
     // create o365 contact object
@@ -374,7 +374,7 @@ export default class O365Exporter {
   private static async iterateCompanies(index: number = 0) {
     this.task.reportProgress(++this.currentProgress)
     this.task.setStatusText(
-      this.task.progress + '/' + this.task.maxProgress + ' importieren'
+      this.task.progress + '/' + this.task.maxProgress + ' exportieren'
     )
 
     // create o365 contact object
