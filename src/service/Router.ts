@@ -6,8 +6,8 @@ import * as fs from 'fs'
 import * as jwt from 'jsonwebtoken'
 import * as mime from 'mime-types'
 import { OIDCStrategy } from 'passport-azure-ad'
-import Backupper from '../abstraction/Backupper'
 
+import Backupper from '../abstraction/Backupper'
 import CSVExporter from '../abstraction/CSVExport'
 import DataImporter from '../abstraction/DataImporter'
 import O365Exporter from '../abstraction/O365Exporter'
@@ -22,6 +22,7 @@ import User from '../model/system/User'
 import { graph_setUserForO365, graph_signInComplete } from '../o365/graph'
 import AuthService from './AuthService'
 import DatabaseService from './DatabaseService'
+import Logger from './Logger'
 import TaskManager from './TaskManager'
 
 const passport = require('passport')
@@ -286,7 +287,14 @@ export default class Router {
             }
           }
         } catch (exc) {
-          console.error(exc)
+          Logger.log(
+            'login',
+            `${new Date().toLocaleTimeString('de-CH', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+            })}\t\tERROR -> ${exc.message}`
+          )
 
           result = {
             success: false,
