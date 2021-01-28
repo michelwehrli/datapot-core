@@ -71,12 +71,30 @@ export default class O365Exporter {
 
     this.currentContactLookup.clear()
     for (const currentContact of currentContacts) {
-      const syncInfo: ISyncInfo = JSON.parse(currentContact.children['0'])
-      delete currentContact.children
-      this.currentContactLookup.set(syncInfo.id, {
-        hash: syncInfo.hash,
-        contact: currentContact,
-      })
+      if (
+        currentContact &&
+        currentContact.children &&
+        currentContact.children.length &&
+        currentContact.children['0']
+      ) {
+        const syncInfo: ISyncInfo = JSON.parse(currentContact.children['0'])
+        delete currentContact.children
+        this.currentContactLookup.set(syncInfo.id, {
+          hash: syncInfo.hash,
+          contact: currentContact,
+        })
+      } else {
+        Logger.log(
+          'o365-export',
+          `${new Date().toLocaleTimeString('de-CH', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+          })}\t\tERROR -> Could not read syncInfo of "${JSON.stringify(
+            currentContact
+          )}"`
+        )
+      }
     }
 
     this.kick()
