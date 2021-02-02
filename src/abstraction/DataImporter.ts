@@ -343,8 +343,8 @@ export default class DataImporter {
                 label: dirtyContact['Namenszusatz'],
               },
             }),
-            ...(dirtyContact['Website'] && {
-              websites: [dirtyContact['Website']],
+            ...(dirtyContact['Webseite'] && {
+              websites: [dirtyContact['Webseite']],
             }),
             ...(dirtyContact['Firma'] && {
               companiesWithLocation: [
