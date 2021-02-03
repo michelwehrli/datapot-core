@@ -19,17 +19,20 @@ export default class Backupper {
     this.task.maxProgress = 1
 
     setTimeout(() => {
-      /*var ftps = new FTPS({
-      host: process.env['BACKUP_3PMW_HOST'],
-      username: process.env['BACKUP_3PMW_USERNAME'],
-      password: process.env['BACKUP_3PMW_PASSWORD'],
-      protocol: process.env['BACKUP_3PMW_PROTOCOL'],
-      port: parseInt(process.env['BACKUP_3PMW_PORT']),
-    })*/
+      var ftps = new FTPS({
+        host: process.env['BACKUP_3PMW_HOST'],
+        username: process.env['BACKUP_3PMW_USERNAME'],
+        password: process.env['BACKUP_3PMW_PASSWORD'],
+        protocol: process.env['BACKUP_3PMW_PROTOCOL'],
+        port: parseInt(process.env['BACKUP_3PMW_PORT']),
+        autoConfirm: true,
+      })
 
-      this.task.progress = 1
-      this.task.stop()
-    }, 5000)
+      ftps.ls().exec(console.log)
+    })
+
+    this.task.progress = 1
+    this.task.stop()
   }
 
   public static async stop() {}

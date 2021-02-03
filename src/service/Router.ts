@@ -12,6 +12,7 @@ import CSVExporter from '../abstraction/CSVExport'
 import DataImporter from '../abstraction/DataImporter'
 import O365Exporter from '../abstraction/O365Exporter'
 import SystemImporter from '../abstraction/SystemImporter'
+import TargetedImporter from '../abstraction/TargetedImporter'
 import { AllEntities } from '../constants/Entities'
 import { ETypeIdentifier } from '../enums/ETypeIdentifier'
 import { ETypeMatch } from '../enums/ETypeMatch'
@@ -57,11 +58,32 @@ export default class Router {
         title: 'Stammdaten',
       },
     },
+    group5: {
+      __meta: {
+        isGroup: true,
+        number: 5,
+        sort: 4,
+        title: 'Tools',
+        additionalItems: [
+          {
+            __meta: {
+              icon: 'fa fa-binoculars',
+              isListable: true,
+              name: 'email-reviewer',
+              parent: 5,
+              title: 'E-Mail Reviewer',
+              titlePlural: 'E-Mail Reviewer',
+              navigate: 'crm/email-reviewer',
+            },
+          },
+        ],
+      },
+    },
     group3: {
       __meta: {
         isGroup: true,
         number: 3,
-        sort: 4,
+        sort: 100,
         title: 'Management',
         additionalItems: [
           {
@@ -101,6 +123,8 @@ export default class Router {
       await new DataImporter().init()
       await new SystemImporter().init()
     }
+
+    await new TargetedImporter().init()
 
     await DatabaseService.updateSchema('data')
 
