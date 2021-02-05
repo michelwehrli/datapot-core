@@ -2,6 +2,8 @@ import csv from 'csv-parser'
 import * as fs from 'fs'
 import Company from '../model/data/Company'
 import Contact from '../model/data/Contact'
+import Email from '../model/data/Email'
+import EmailType from '../model/data/EmailType'
 import DatabaseService from '../service/DatabaseService'
 
 const IMPORT_FILE_PATH = '../../res/excel_export_utf8.CSV'
@@ -10,6 +12,23 @@ export default class TargetedImporter {
   constructor() {}
 
   public async init(): Promise<void> {
+    return
+
+    const type = (await DatabaseService.findOne('data', EmailType, <EmailType>{
+      uniquename: 'business',
+    })) as EmailType
+
+    const companies = (await DatabaseService.find('data', Company)) as Company[]
+    for (const company of companies) {
+      if (company.emails.length) {
+        const comp = await new Company().init(company)
+        comp.emails.getItems().forEach((email, i) => {
+          email.type = type
+        })
+        await DatabaseService.insert('data', [await new Company().init(comp)])
+      }
+    }
+
     return
     const results = []
 
