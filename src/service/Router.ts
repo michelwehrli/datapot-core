@@ -460,10 +460,7 @@ export default class Router {
           where
         )
         try {
-          const removeResult = await DatabaseService.remove(
-            req.params.database,
-            [entity]
-          )
+          await DatabaseService.remove(req.params.database, [entity])
           result = {
             success: true,
             authorized: true,

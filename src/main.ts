@@ -2,7 +2,7 @@ import * as bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import * as dotenv from 'dotenv'
-import express from 'express'
+import express, { NextFunction, Request, Response } from 'express'
 import * as fs from 'fs'
 import helmet from 'helmet'
 import * as https from 'https'
@@ -34,6 +34,18 @@ try {
       credentials: true,
     })
   )
+  app.use((_req: Request, res: Response, next: NextFunction) => {
+    res.header('Access-Control-Allow-Origin', 'https://new-crm.datapot.ch')
+    res.header(
+      'Access-Control-Allow-Methods',
+      'GET, POST, PATCH, PUT, DELETE, OPTIONS'
+    )
+    res.header(
+      'Access-Control-Allow-Headers',
+      'Origin, Content-Type, X-Auth-Token'
+    )
+    next()
+  })
 
   Router.listen(app).then(() => {
     https
