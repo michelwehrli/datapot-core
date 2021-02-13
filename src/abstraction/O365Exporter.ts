@@ -171,11 +171,11 @@ export default class O365Exporter {
     })
 
     let fileAs = []
-    if (c.givenname) {
-      fileAs.push(c.givenname)
-    }
     if (c.surname) {
       fileAs.push(c.surname)
+    }
+    if (c.givenname) {
+      fileAs.push(c.givenname)
     }
     if (
       c.companiesWithLocation &&
