@@ -14,20 +14,60 @@ export default class TargetedImporter {
   public async init(): Promise<void> {
     return
 
-    const type = (await DatabaseService.findOne('data', EmailType, <EmailType>{
+    const typeG = await DatabaseService.findOne<EmailType>('data', EmailType, <
+      EmailType
+    >{
       uniquename: 'business',
-    })) as EmailType
+    })
+    const typeP = await DatabaseService.findOne<EmailType>('data', EmailType, <
+      EmailType
+    >{
+      uniquename: 'private',
+    })
 
-    const companies = (await DatabaseService.find('data', Company)) as Company[]
+    const endings = []
+    endings.push('hispeed.ch')
+    endings.push('ziksuhr.ch')
+    endings.push('hotmail.com')
+    endings.push('swissonline.ch')
+    endings.push('sensemail.ch')
+    endings.push('lueschers.net')
+    endings.push('gmail.com')
+    endings.push('bluewin.ch')
+
+    const companies = await DatabaseService.find<Company>('data', Company)
     for (const company of companies) {
-      if (company.emails.length) {
-        const comp = await new Company().init(company)
-        comp.emails.getItems().forEach((email, i) => {
-          email.type = type
+      for (const email of company.emails) {
+        email.type = typeG
+
+        endings.forEach((ending) => {
+          if (email.address.endsWith(ending)) {
+            console.log(email.address)
+            email.type = typeP
+          }
         })
-        await DatabaseService.insert('data', [await new Company().init(comp)])
       }
     }
+
+    await DatabaseService.insert('data', companies)
+    console.log('companies saved')
+
+    const contacts = await DatabaseService.find<Contact>('data', Contact)
+    for (const contact of contacts) {
+      for (const email of contact.emails) {
+        email.type = typeG
+
+        endings.forEach((ending) => {
+          if (email.address.endsWith(ending)) {
+            console.log(email.address)
+            email.type = typeP
+          }
+        })
+      }
+    }
+
+    await DatabaseService.insert('data', contacts)
+    console.log('contacts saved')
 
     return
     const results = []
