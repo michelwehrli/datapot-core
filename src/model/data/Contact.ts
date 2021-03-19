@@ -391,10 +391,9 @@ export default class Contact extends Table implements IContact {
         type: Address.getDatamodel(),
       },
       companiesWithLocation: {
-        label: 'Firmen und Filialen',
+        label: 'Firmen',
         multiple: true,
         type: CompanyWithLocation.getDatamodel(),
-        isListable: false,
       },
       department: {
         label: 'Abteilung',
