@@ -155,7 +155,7 @@ export default class O365Exporter {
     // create o365 contact object
     const c: Contact = this.contacts[index]
 
-    const mobilePhones: string[] = []
+    let mobilePhone: string = null
     const businessPhones: string[] = []
     const homePhones: string[] = []
     c.phonenumbers.toArray().map((p: Phonenumber) => {
@@ -168,8 +168,8 @@ export default class O365Exporter {
           ? p.type === 'business'
           : p.type.uniquename === 'business'
 
-      if (isMobile) {
-        mobilePhones.push(p.number)
+      if (isMobile && !mobilePhone) {
+        mobilePhone = p.number
       } else {
         if (isBusiness) {
           businessPhones.push(p.number)
@@ -280,10 +280,9 @@ export default class O365Exporter {
         }),
       ...(c.positions &&
         c.positions.length > 0 && { jobTitle: c.positions[0] }),
-      ...(mobilePhones &&
-        mobilePhones.length > 0 && {
-          mobilePhone: mobilePhones[0],
-        }),
+      ...(mobilePhone && {
+        mobilePhone: mobilePhone,
+      }),
       ...(c.remarks && {
         personalNotes: c.remarks,
       }),
