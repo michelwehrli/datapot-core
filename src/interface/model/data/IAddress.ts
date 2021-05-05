@@ -5,6 +5,7 @@ import IZip from './IZip'
 export default abstract class IAddress {
   abstract id?: number
   abstract street?: string
+  abstract additionals?: string
   abstract pobox?: string
   abstract zip?: IZip
   abstract county?: ICounty

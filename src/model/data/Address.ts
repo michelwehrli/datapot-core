@@ -15,6 +15,9 @@ export default class Address extends Table implements IAddress {
   @Property()
   street: string
 
+  @Property()
+  additionals: string
+
   @Property({ nullable: true })
   pobox?: string
 
@@ -45,6 +48,7 @@ export default class Address extends Table implements IAddress {
       this.id = data.id
     }
     this.street = data.street
+    this.additionals = data.additionals
     this.pobox = data.pobox
 
     if (data && data.zip && data.zip.zip) {
@@ -105,6 +109,10 @@ export default class Address extends Table implements IAddress {
       street: {
         label: 'Strasse',
         type: 'string',
+      },
+      additionals: {
+        label: 'Zusatz',
+        type: 'additionals',
       },
       pobox: {
         label: 'Postfach',
