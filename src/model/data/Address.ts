@@ -105,7 +105,6 @@ export default class Address extends Table implements IAddress {
       street: {
         label: 'Strasse',
         type: 'string',
-        required: true,
       },
       pobox: {
         label: 'Postfach',
