@@ -37,7 +37,7 @@ export default class Zip extends Table implements IZip {
         icon: 'fa fa-thumbtack',
         isListable: true,
         parent: 2,
-        sort: 'zip',
+        sort: 'location',
       },
       id: {
         label: 'ID',
