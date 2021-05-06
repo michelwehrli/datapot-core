@@ -45,10 +45,6 @@ export default class EmailType extends Table implements IEmailType {
         label: 'Bezeichnung',
         type: 'string',
       },
-      _defaultValue: {
-        label: 'Standardwert',
-        type: 'boolean',
-      },
     })
   }
 }
