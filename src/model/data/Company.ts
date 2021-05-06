@@ -155,6 +155,8 @@ export default class Company extends Table implements ICompany {
       this.contact_person = existing
         ? existing
         : await new Contact().init(data.contact_person)
+    } else {
+      this.contact_person = undefined
     }
 
     this.websites = data.websites
