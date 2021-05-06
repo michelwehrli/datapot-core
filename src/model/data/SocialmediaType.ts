@@ -15,6 +15,7 @@ export default class SocialmediaType extends Table implements ISocialmediaType {
   }
 
   async init(data: ISocialmediaType) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -24,7 +25,7 @@ export default class SocialmediaType extends Table implements ISocialmediaType {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'socialmedia_type',
@@ -44,6 +45,6 @@ export default class SocialmediaType extends Table implements ISocialmediaType {
         label: 'Bezeichnung',
         type: 'string',
       },
-    }
+    })
   }
 }

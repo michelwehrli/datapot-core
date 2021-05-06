@@ -15,6 +15,7 @@ export default class PhonenumberType extends Table implements IPhonenumberType {
   }
 
   async init(data: IPhonenumberType) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -24,7 +25,7 @@ export default class PhonenumberType extends Table implements IPhonenumberType {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'phonenumber_type',
@@ -44,6 +45,6 @@ export default class PhonenumberType extends Table implements IPhonenumberType {
         label: 'Bezeichnung',
         type: 'string',
       },
-    }
+    })
   }
 }

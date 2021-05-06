@@ -31,6 +31,7 @@ export default class Document extends Table implements IDocument {
   }
 
   async init(data: IDocument) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -85,7 +86,7 @@ export default class Document extends Table implements IDocument {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'system',
         name: 'document',
@@ -125,6 +126,6 @@ export default class Document extends Table implements IDocument {
         label: 'Ist sicher',
         type: 'boolean',
       },
-    }
+    })
   }
 }

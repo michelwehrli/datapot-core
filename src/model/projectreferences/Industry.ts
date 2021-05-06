@@ -15,6 +15,7 @@ export default class Industry extends Table implements IIndustry {
   }
 
   async init(data: IIndustry) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -24,7 +25,7 @@ export default class Industry extends Table implements IIndustry {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'industry',
@@ -44,6 +45,6 @@ export default class Industry extends Table implements IIndustry {
         label: 'Bezeichnung',
         type: 'string',
       },
-    }
+    })
   }
 }

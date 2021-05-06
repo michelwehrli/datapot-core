@@ -16,6 +16,7 @@ export default class CompetenceField extends Table implements ICompetenceField {
   }
 
   async init(data: ICompetenceField) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -25,7 +26,7 @@ export default class CompetenceField extends Table implements ICompetenceField {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'competence_field',
@@ -45,6 +46,6 @@ export default class CompetenceField extends Table implements ICompetenceField {
         label: 'Bezeichnung',
         type: 'string',
       },
-    }
+    })
   }
 }

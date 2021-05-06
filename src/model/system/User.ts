@@ -61,6 +61,7 @@ export default class User extends Table implements IUser {
   }
 
   async init(data: IUser) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -127,7 +128,7 @@ export default class User extends Table implements IUser {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'system',
         name: 'user',
@@ -194,6 +195,6 @@ export default class User extends Table implements IUser {
       o365_oaccess_token: {
         isSecure: true,
       },
-    }
+    })
   }
 }

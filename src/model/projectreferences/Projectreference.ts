@@ -138,6 +138,7 @@ export default class Projectreference extends Table
   uniquename: string
 
   async init(data: IProjectreference, clear?: boolean) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -333,7 +334,7 @@ export default class Projectreference extends Table
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'projectreference',
@@ -489,6 +490,6 @@ export default class Projectreference extends Table
         type: 'string',
         isListable: false,
       },
-    }
+    })
   }
 }

@@ -15,6 +15,7 @@ export default class Design extends Table implements IDesign {
   }
 
   async init(data: IDesign) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -24,7 +25,7 @@ export default class Design extends Table implements IDesign {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'system',
         name: 'design',
@@ -46,6 +47,6 @@ export default class Design extends Table implements IDesign {
         type: 'string',
         required: true,
       },
-    }
+    })
   }
 }

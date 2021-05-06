@@ -15,6 +15,7 @@ export default class EmailType extends Table implements IEmailType {
   }
 
   async init(data: IEmailType) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -24,7 +25,7 @@ export default class EmailType extends Table implements IEmailType {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'email_type',
@@ -44,6 +45,10 @@ export default class EmailType extends Table implements IEmailType {
         label: 'Bezeichnung',
         type: 'string',
       },
-    }
+      _defaultValue: {
+        label: 'Standardwert',
+        type: 'boolean',
+      },
+    })
   }
 }

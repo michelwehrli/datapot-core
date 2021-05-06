@@ -6,6 +6,7 @@ import * as fs from 'fs'
 import * as jwt from 'jsonwebtoken'
 import * as mime from 'mime-types'
 import { OIDCStrategy } from 'passport-azure-ad'
+import cleanDeep from 'clean-deep'
 
 import Backupper from '../abstraction/Backupper'
 import CSVExporter from '../abstraction/CSVExport'
@@ -233,6 +234,8 @@ export default class Router {
       }
     )
 
+    let countr = 0
+
     /*
       get entry with id or get all entries
     */
@@ -240,6 +243,7 @@ export default class Router {
       '/api/:key/data/:database/:table/:identifier?',
       this.auth,
       async (req: Request, res: Response, next: NextFunction) => {
+        countr = 0
         let result: IRestError | IRestSuccess
 
         if (!req.params.key || !req.params.table) {
@@ -298,10 +302,17 @@ export default class Router {
           }
 
           if (dbresult) {
+            let data = dbresult
+            if (Array.isArray(data)) {
+              data = dbresult.map((r) => Object.assign({}, r))
+            } else {
+              data = Object.assign({}, dbresult)
+            }
+
             result = {
               success: true,
               authorized: true,
-              data: dbresult,
+              data: data,
             }
           } else {
             result = {
@@ -371,11 +382,8 @@ export default class Router {
 
         let obj
         if (req.params.identifier) {
-          let where: any
-          if (req.params.identifier) {
-            where = {}
-            where[ETypeIdentifier[req.params.table]] = req.params.identifier
-          }
+          let where: any = {}
+          where[ETypeIdentifier[req.params.table]] = req.params.identifier
           obj = await DatabaseService.findOne(
             req.params.database,
             ETypeMatch[req.params.table],

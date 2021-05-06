@@ -41,6 +41,7 @@ export default class Address extends Table implements IAddress {
   }
 
   async init(data: IAddress) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -91,7 +92,7 @@ export default class Address extends Table implements IAddress {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'address',
@@ -121,6 +122,6 @@ export default class Address extends Table implements IAddress {
       zip: Zip.getDatamodel(),
       county: County.getDatamodel(),
       country: Country.getDatamodel(),
-    }
+    })
   }
 }

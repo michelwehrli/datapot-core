@@ -15,6 +15,7 @@ export default class Complexity extends Table implements IComplexity {
   }
 
   async init(data: IComplexity) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -24,7 +25,7 @@ export default class Complexity extends Table implements IComplexity {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'complexity',
@@ -44,6 +45,6 @@ export default class Complexity extends Table implements IComplexity {
         label: 'Bezeichnung',
         type: 'string',
       },
-    }
+    })
   }
 }

@@ -23,6 +23,7 @@ export default class Socialmedia extends Table implements ISocialmedia {
   }
 
   async init(data: ISocialmedia) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -53,7 +54,7 @@ export default class Socialmedia extends Table implements ISocialmedia {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'socialmedia',
@@ -77,6 +78,6 @@ export default class Socialmedia extends Table implements ISocialmedia {
         type: SocialmediaType.getDatamodel(),
         required: true,
       },
-    }
+    })
   }
 }

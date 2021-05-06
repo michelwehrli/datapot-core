@@ -23,6 +23,7 @@ export default class Email extends Table implements IEmail {
   }
 
   async init(data: IEmail) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -53,7 +54,7 @@ export default class Email extends Table implements IEmail {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'email',
@@ -77,6 +78,6 @@ export default class Email extends Table implements IEmail {
         type: EmailType.getDatamodel(),
         required: true,
       },
-    }
+    })
   }
 }

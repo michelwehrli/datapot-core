@@ -18,6 +18,7 @@ export default class Zip extends Table implements IZip {
   }
 
   async init(data: IZip) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -28,7 +29,7 @@ export default class Zip extends Table implements IZip {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'zip',
@@ -55,6 +56,6 @@ export default class Zip extends Table implements IZip {
         type: 'string',
         required: true,
       },
-    }
+    })
   }
 }

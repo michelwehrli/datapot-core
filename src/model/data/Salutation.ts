@@ -15,6 +15,7 @@ export default class Salutation extends Table implements ISalutation {
   }
 
   async init(data: ISalutation) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -24,7 +25,7 @@ export default class Salutation extends Table implements ISalutation {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'salutation',
@@ -44,6 +45,6 @@ export default class Salutation extends Table implements ISalutation {
         label: 'Bezeichnung',
         type: 'string',
       },
-    }
+    })
   }
 }

@@ -93,6 +93,7 @@ export default class Contact extends Table implements IContact {
   }
 
   async init(data: IContact, clear?: boolean) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -342,7 +343,7 @@ export default class Contact extends Table implements IContact {
     if (alreadyCalled) {
       return
     }
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'contact',
@@ -449,6 +450,6 @@ export default class Contact extends Table implements IContact {
         multiple: true,
         type: Category.getDatamodel(),
       },
-    }
+    })
   }
 }

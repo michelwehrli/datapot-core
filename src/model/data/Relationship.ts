@@ -15,6 +15,7 @@ export default class Relationship extends Table implements IRelationship {
   }
 
   async init(data: IRelationship) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -24,7 +25,7 @@ export default class Relationship extends Table implements IRelationship {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'relationship',
@@ -44,6 +45,6 @@ export default class Relationship extends Table implements IRelationship {
         label: 'Bezeichnung',
         type: 'string',
       },
-    }
+    })
   }
 }

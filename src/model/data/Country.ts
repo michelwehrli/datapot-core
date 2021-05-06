@@ -15,6 +15,7 @@ export default class Country extends Table implements ICountry {
   }
 
   async init(data: ICountry) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -24,7 +25,7 @@ export default class Country extends Table implements ICountry {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'country',
@@ -44,6 +45,6 @@ export default class Country extends Table implements ICountry {
         label: 'Bezeichnung',
         type: 'string',
       },
-    }
+    })
   }
 }

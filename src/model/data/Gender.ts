@@ -15,6 +15,7 @@ export default class Gender extends Table implements IGender {
   }
 
   async init(data: IGender) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -24,7 +25,7 @@ export default class Gender extends Table implements IGender {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'gender',
@@ -44,6 +45,6 @@ export default class Gender extends Table implements IGender {
         label: 'Bezeichnung',
         type: 'string',
       },
-    }
+    })
   }
 }

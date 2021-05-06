@@ -29,6 +29,7 @@ export default class Phonenumber extends Table implements IPhonenumber {
   }
 
   async init(data: IPhonenumber) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -77,7 +78,7 @@ export default class Phonenumber extends Table implements IPhonenumber {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'phonenumber',
@@ -106,6 +107,6 @@ export default class Phonenumber extends Table implements IPhonenumber {
         type: PhonenumberLine.getDatamodel(),
         required: true,
       },
-    }
+    })
   }
 }

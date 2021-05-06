@@ -23,6 +23,7 @@ export default class CompanyWithLocation extends Table
   }
 
   async init(data: ICompanyWithLocation, clear?: boolean) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -73,7 +74,7 @@ export default class CompanyWithLocation extends Table
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'companyWithLocation',
@@ -98,6 +99,6 @@ export default class CompanyWithLocation extends Table
         label: 'Adresse',
         type: Address.getDatamodel(),
       },
-    }
+    })
   }
 }

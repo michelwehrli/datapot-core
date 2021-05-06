@@ -15,6 +15,7 @@ export default class ResponsibleArea extends Table implements IResponsibleArea {
   }
 
   async init(data: IResponsibleArea) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -24,7 +25,7 @@ export default class ResponsibleArea extends Table implements IResponsibleArea {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'responsible_area',
@@ -44,6 +45,6 @@ export default class ResponsibleArea extends Table implements IResponsibleArea {
         label: 'Bezeichnung',
         type: 'string',
       },
-    }
+    })
   }
 }

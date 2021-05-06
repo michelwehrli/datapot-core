@@ -65,6 +65,7 @@ export default class Company extends Table implements ICompany {
   }
 
   async init(data: ICompany, clear?: boolean) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -247,7 +248,7 @@ export default class Company extends Table implements ICompany {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'company',
@@ -316,6 +317,6 @@ export default class Company extends Table implements ICompany {
         multiple: true,
         type: Category.getDatamodel(),
       },
-    }
+    })
   }
 }

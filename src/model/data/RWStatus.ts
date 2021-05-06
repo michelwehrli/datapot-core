@@ -15,6 +15,7 @@ export default class RWStatus extends Table implements IRWStatus {
   }
 
   async init(data: IRWStatus) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -24,7 +25,7 @@ export default class RWStatus extends Table implements IRWStatus {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'rwstatus',
@@ -44,6 +45,6 @@ export default class RWStatus extends Table implements IRWStatus {
         label: 'Bezeichnung',
         type: 'string',
       },
-    }
+    })
   }
 }

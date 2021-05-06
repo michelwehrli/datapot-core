@@ -15,6 +15,7 @@ export default class Role extends Table implements IRole {
   }
 
   async init(data: IRole) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -24,7 +25,7 @@ export default class Role extends Table implements IRole {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'role',
@@ -44,6 +45,6 @@ export default class Role extends Table implements IRole {
         label: 'Bezeichnung',
         type: 'string',
       },
-    }
+    })
   }
 }

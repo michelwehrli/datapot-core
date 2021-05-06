@@ -15,6 +15,7 @@ export default class Category extends Table implements ICategory {
   }
 
   async init(data: ICategory) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -24,7 +25,7 @@ export default class Category extends Table implements ICategory {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'category',
@@ -44,6 +45,6 @@ export default class Category extends Table implements ICategory {
         label: 'Bezeichnung',
         type: 'string',
       },
-    }
+    })
   }
 }

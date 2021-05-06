@@ -15,6 +15,7 @@ export default class County extends Table implements ICounty {
   }
 
   async init(data: ICounty) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -24,7 +25,7 @@ export default class County extends Table implements ICounty {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'county',
@@ -44,6 +45,6 @@ export default class County extends Table implements ICounty {
         label: 'Bezeichnung',
         type: 'string',
       },
-    }
+    })
   }
 }

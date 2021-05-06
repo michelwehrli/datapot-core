@@ -15,6 +15,7 @@ export default class Title extends Table implements ITitle {
   }
 
   async init(data: ITitle) {
+    super.init(data)
     if (!data) {
       data = {}
     }
@@ -24,7 +25,7 @@ export default class Title extends Table implements ITitle {
   }
 
   public static getDatamodel() {
-    return {
+    return Object.assign(super.getParentDatamodel(), {
       __meta: {
         db: 'data',
         name: 'title',
@@ -44,6 +45,6 @@ export default class Title extends Table implements ITitle {
         label: 'Bezeichnung',
         type: 'string',
       },
-    }
+    })
   }
 }
