@@ -6,7 +6,6 @@ import * as fs from 'fs'
 import * as jwt from 'jsonwebtoken'
 import * as mime from 'mime-types'
 import { OIDCStrategy } from 'passport-azure-ad'
-import cleanDeep from 'clean-deep'
 
 import Backupper from '../abstraction/Backupper'
 import CSVExporter from '../abstraction/CSVExport'
