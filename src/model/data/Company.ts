@@ -39,7 +39,7 @@ export default class Company extends Table implements ICompany {
   @ManyToMany(() => Phonenumber, null, { eager: true })
   phonenumbers = new Collection<Phonenumber>(this)
 
-  @OneToOne(() => Contact)
+  @ManyToOne(() => Contact, { eager: true })
   contact_person?: Contact
 
   @Property({ nullable: true })
