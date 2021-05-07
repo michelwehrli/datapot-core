@@ -4,6 +4,7 @@ import Company from '../model/data/Company'
 import Contact from '../model/data/Contact'
 import Email from '../model/data/Email'
 import EmailType from '../model/data/EmailType'
+import Zip from '../model/data/Zip'
 import DatabaseService from '../service/DatabaseService'
 
 const IMPORT_FILE_PATH = '../../res/excel_export_utf8.CSV'
@@ -13,7 +14,39 @@ export default class TargetedImporter {
 
   public async init(): Promise<void> {
     return
+    // zips
+    // import
+    const data = JSON.parse(
+      fs.readFileSync('../../data/plz_verzeichnis_v2.json', {
+        encoding: 'utf8',
+      })
+    )
 
+    const existingEntries = (await DatabaseService.find('data', Zip)) as Zip[]
+    const existingPlz = existingEntries
+      .map((e) => e.zip)
+      .filter((e) => e !== 'Keine Angaben' && e !== '???')
+
+    const instances = data.filter(
+      (d) => existingPlz.indexOf(d.postleitzahl.toString()) == -1
+    )
+
+    const initedInstances = []
+    for (let i of instances) {
+      const z = new Zip()
+      await z.init({
+        location: i.ortbez27,
+        zip: i.postleitzahl,
+      })
+      initedInstances.push(z)
+    }
+
+    await DatabaseService.insert('data', initedInstances)
+    console.log('done!')
+
+    return
+
+    // phonnumber shizzle
     const typeG = await DatabaseService.findOne<EmailType>('data', EmailType, <
       EmailType
     >{
