@@ -42,7 +42,6 @@ export default class TargetedImporter {
 
         endings.forEach((ending) => {
           if (email.address.endsWith(ending)) {
-            console.log(email.address)
             email.type = typeP
           }
         })
@@ -50,7 +49,6 @@ export default class TargetedImporter {
     }
 
     await DatabaseService.insert('data', companies)
-    console.log('companies saved')
 
     const contacts = await DatabaseService.find<Contact>('data', Contact)
     for (const contact of contacts) {
@@ -59,7 +57,6 @@ export default class TargetedImporter {
 
         endings.forEach((ending) => {
           if (email.address.endsWith(ending)) {
-            console.log(email.address)
             email.type = typeP
           }
         })
@@ -67,7 +64,6 @@ export default class TargetedImporter {
     }
 
     await DatabaseService.insert('data', contacts)
-    console.log('contacts saved')
 
     return
     const results = []
