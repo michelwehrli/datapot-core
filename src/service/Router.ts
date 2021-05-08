@@ -301,12 +301,9 @@ export default class Router {
           }
 
           if (dbresult) {
-            let data = dbresult
-            if (Array.isArray(data)) {
-              data = dbresult.map((r) => Object.assign({}, r))
-            } else {
-              data = Object.assign({}, dbresult)
-            }
+            let data = Array.isArray(dbresult)
+              ? dbresult.map((r) => Object.assign({}, r))
+              : Object.assign({}, dbresult)
 
             result = {
               success: true,
