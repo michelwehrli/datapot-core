@@ -231,7 +231,7 @@ export default class O365Exporter {
         c.websites.length > 0 && { businessHomepage: c.websites[0] }),
       ...(businessPhones &&
         businessPhones.length > 0 && {
-          businessPhones: businessPhones,
+          businessPhones: businessPhones.splice(0, 2),
         }),
       ...(c.categories &&
         c.categories.length > 0 && {
@@ -394,11 +394,11 @@ export default class O365Exporter {
         c.websites.length > 0 && { businessHomepage: c.websites[0] }),
       ...(c.phonenumbers &&
         c.phonenumbers.length > 0 && {
-          businessPhones: (c.phonenumbers.toArray() as Phonenumber[]).map(
-            (p) => {
+          businessPhones: (c.phonenumbers.toArray() as Phonenumber[])
+            .map((p) => {
               return p.number
-            }
-          ),
+            })
+            .splice(0, 2),
         }),
       ...(c.emails &&
         c.emails.length > 0 && {
