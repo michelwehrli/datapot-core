@@ -1,84 +1,50 @@
-import { Entity, PrimaryKey, Property, ManyToOne } from '@mikro-orm/core'
-import DataImporter from '../../abstraction/DataImporter'
+import {
+  Entity,
+  LoadStrategy,
+  ManyToOne,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core'
 import IPhonenumber from '../../interface/model/data/IPhonenumber'
-import DatabaseService from '../../service/DatabaseService'
-import Table from '../extends/Table'
+import Table from './parents/Table'
 import PhonenumberLine from './PhonenumberLine'
 import PhonenumberType from './PhonenumberType'
 
 @Entity()
-export default class Phonenumber extends Table implements IPhonenumber {
+export default class Phonenumber extends Table {
   @PrimaryKey()
-  id: number
-
+  id!: number
   @Property()
   number: string
-
-  @ManyToOne(() => PhonenumberType, {
-    eager: true,
-  })
+  @ManyToOne(() => PhonenumberType, { eager: true })
   type: PhonenumberType
-
-  @ManyToOne(() => PhonenumberLine, {
-    eager: true,
-  })
+  @ManyToOne(() => PhonenumberLine, { eager: true })
   line: PhonenumberLine
 
-  constructor() {
-    super()
+  constructor(data: IPhonenumber) {
+    super(data)
+    this.id = data?.id
+    this.number = data?.number
+    this.type = (data?.type as PhonenumberType) || null
+    this.line = (data?.line as PhonenumberLine) || null
   }
 
-  async init(data: IPhonenumber) {
-    super.init(data)
-    if (!data) {
-      data = {}
-    }
-    if (data.id) {
-      this.id = data.id
-    }
-    this.number = data.number
-
-    if (data && data.type && data.type.uniquename) {
-      let existingType: PhonenumberType
-      if (data && data.type) {
-        existingType = await DatabaseService.findOne('data', PhonenumberType, {
-          uniquename: data.type.uniquename,
-        })
-      }
-      this.type = existingType
-        ? existingType
-        : DataImporter.getCache('phonenumber/type/' + JSON.stringify(data.type))
-        ? DataImporter.getCache('phonenumber/type/' + JSON.stringify(data.type))
-        : await new PhonenumberType().init(data.type)
-      DataImporter.setCache(
-        'phonenumber/type/' + JSON.stringify(data.type),
-        this.type
-      )
-    }
-
-    if (data && data.line && data.line.uniquename) {
-      let existingLine: PhonenumberLine
-      if (data && data.line) {
-        existingLine = await DatabaseService.findOne('data', PhonenumberLine, {
-          uniquename: data.line.uniquename,
-        })
-      }
-      this.line = existingLine
-        ? existingLine
-        : DataImporter.getCache('phonenumber/line/' + JSON.stringify(data.line))
-        ? DataImporter.getCache('phonenumber/line/' + JSON.stringify(data.line))
-        : await new PhonenumberLine().init(data.line)
-      DataImporter.setCache(
-        'phonenumber/line/' + JSON.stringify(data.line),
-        this.line
-      )
-    }
-
-    return this
+  public async refresh(data: IPhonenumber) {
+    this.number = data?.number
+    this.type
+      ? data?.type?.uniquename && (await this.type.refresh(data.type))
+      : (this.type = data?.type?.uniquename
+          ? (data.type as PhonenumberType)
+          : null)
+    this.line
+      ? data?.line?.uniquename && (await this.line.refresh(data.line))
+      : (this.line = data?.line?.uniquename
+          ? (data.line as PhonenumberLine)
+          : null)
   }
 
   public static getDatamodel() {
-    return Object.assign(super.getParentDatamodel(), {
+    return Object.assign(super.getDatamodel(), {
       __meta: {
         db: 'data',
         name: 'phonenumber',

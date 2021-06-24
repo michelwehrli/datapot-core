@@ -18,12 +18,6 @@ import Socialmedia from '../model/data/Socialmedia'
 import SocialmediaType from '../model/data/SocialmediaType'
 import Title from '../model/data/Title'
 import Zip from '../model/data/Zip'
-import CompetenceField from '../model/projectreferences/CompentenceField'
-import Complexity from '../model/projectreferences/Complexity'
-import Industry from '../model/projectreferences/Industry'
-import Projectreference from '../model/projectreferences/Projectreference'
-import ResponsibleArea from '../model/projectreferences/ResponsbileArea'
-import Role from '../model/projectreferences/Role'
 import Design from '../model/system/Design'
 import Document from '../model/system/Document'
 import User from '../model/system/User'
@@ -53,11 +47,4 @@ export const ETypeMatch = {
   design: Design,
   document: Document,
   user: User,
-
-  projectreference: Projectreference,
-  competence_field: CompetenceField,
-  complexity: Complexity,
-  industry: Industry,
-  responsible_area: ResponsibleArea,
-  role: Role,
 }

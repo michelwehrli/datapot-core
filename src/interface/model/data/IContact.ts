@@ -5,6 +5,7 @@ import CompanyWithLocation from '../../../model/data/CompanyWithLocation'
 import Email from '../../../model/data/Email'
 import Phonenumber from '../../../model/data/Phonenumber'
 import Socialmedia from '../../../model/data/Socialmedia'
+import ITable from '../extends/ITable'
 import IAddress from './IAddress'
 import ICategory from './ICategory'
 import ICompanyWithLocation from './ICompanyWithLocation'
@@ -17,7 +18,7 @@ import ISalutation from './ISalutation'
 import ISocialmedia from './ISocialmedia'
 import ITitle from './ITitle'
 
-export default abstract class IContact {
+export default abstract class IContact extends ITable {
   abstract id?: number
   abstract gender?: IGender
   abstract salutation?: ISalutation

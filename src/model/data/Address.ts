@@ -1,98 +1,60 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core'
-import DataImporter from '../../abstraction/DataImporter'
 import IAddress from '../../interface/model/data/IAddress'
-import DatabaseService from '../../service/DatabaseService'
-import Table from '../extends/Table'
+import IContact from '../../interface/model/data/IContact'
 import Country from './Country'
 import County from './County'
+import Table from './parents/Table'
 import Zip from './Zip'
 
 @Entity()
-export default class Address extends Table implements IAddress {
+export default class Address extends Table {
   @PrimaryKey()
-  id: number
-
+  id!: number
   @Property()
   street: string
-
-  @Property()
-  additionals: string
-
+  @Property({ nullable: true })
+  additionals?: string
   @Property({ nullable: true })
   pobox?: string
-
-  @ManyToOne(() => Zip, {
-    eager: true,
-  })
+  @ManyToOne(() => Zip, { eager: true, nullable: true })
   zip?: Zip
-
-  @ManyToOne(() => County, {
-    eager: true,
-  })
+  @ManyToOne(() => County, { eager: true, nullable: true })
   county?: County
-
-  @ManyToOne(() => Country, {
-    eager: true,
-  })
+  @ManyToOne(() => Country, { eager: true, nullable: true })
   country?: Country
 
-  constructor() {
-    super()
+  constructor(data: IAddress) {
+    super(data)
+    this.id = data?.id
+    this.street = data?.street
+    this.additionals = data?.additionals
+    this.pobox = data?.pobox
+    this.zip = (data?.zip as Zip) || null
+    this.county = (data?.county as County) || null
+    this.country = (data?.country as Country) || null
   }
 
-  async init(data: IAddress) {
-    super.init(data)
-    if (!data) {
-      data = {}
-    }
-    if (data.id) {
-      this.id = data.id
-    }
-    this.street = data.street
-    this.additionals = data.additionals
-    this.pobox = data.pobox
-
-    if (data && data.zip && data.zip.zip) {
-      const existing: Zip = await DatabaseService.findOne('data', Zip, {
-        zip: data.zip.zip,
-      })
-      this.zip = existing
-        ? existing
-        : DataImporter.getCache(JSON.stringify(data.zip))
-        ? DataImporter.getCache(JSON.stringify(data.zip))
-        : await new Zip().init(data.zip)
-      DataImporter.setCache(JSON.stringify(data.zip), this.zip)
-    }
-
-    if (data && data.county && data.county.uniquename) {
-      const existing: County = await DatabaseService.findOne('data', County, {
-        uniquename: data.county.uniquename,
-      })
-      this.county = existing
-        ? existing
-        : DataImporter.getCache(JSON.stringify(data.county))
-        ? DataImporter.getCache(JSON.stringify(data.county))
-        : await new County().init(data.county)
-      DataImporter.setCache(JSON.stringify(data.county), this.county)
-    }
-
-    if (data && data.country && data.country.uniquename) {
-      const existing: Country = await DatabaseService.findOne('data', Country, {
-        uniquename: data.country.uniquename,
-      })
-      this.country = existing
-        ? existing
-        : DataImporter.getCache(JSON.stringify(data.country))
-        ? DataImporter.getCache(JSON.stringify(data.country))
-        : await new Country().init(data.country)
-      DataImporter.setCache(JSON.stringify(data.country), this.country)
-    }
-
-    return this
+  public async refresh(data: IAddress) {
+    this.street = data?.street
+    this.additionals = data?.additionals
+    this.pobox = data?.pobox
+    this.zip
+      ? data?.zip?.id && (await this.zip.refresh(data.zip))
+      : (this.zip = data?.zip?.id ? (data.zip as Zip) : null)
+    this.county
+      ? data?.county?.uniquename && (await this.county.refresh(data.county))
+      : (this.county = data?.county?.uniquename
+          ? (data.county as County)
+          : null)
+    this.country
+      ? data?.country?.uniquename && (await this.country.refresh(data.country))
+      : (this.country = data?.country?.uniquename
+          ? (data.country as Country)
+          : null)
   }
 
   public static getDatamodel() {
-    return Object.assign(super.getParentDatamodel(), {
+    return Object.assign(super.getDatamodel(), {
       __meta: {
         db: 'data',
         name: 'address',

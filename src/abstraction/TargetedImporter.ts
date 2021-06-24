@@ -33,8 +33,7 @@ export default class TargetedImporter {
 
     const initedInstances = []
     for (let i of instances) {
-      const z = new Zip()
-      await z.init({
+      const z = new Zip({
         location: i.ortbez27,
         zip: i.postleitzahl,
       })
@@ -42,7 +41,6 @@ export default class TargetedImporter {
     }
 
     await DatabaseService.insert('data', initedInstances)
-    console.log('done!')
 
     return
 

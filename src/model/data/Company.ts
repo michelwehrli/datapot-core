@@ -1,254 +1,150 @@
 import {
+  Collection,
   Entity,
+  LoadStrategy,
+  ManyToMany,
+  ManyToOne,
   PrimaryKey,
   Property,
-  ManyToMany,
-  Collection,
-  ManyToOne,
-  OneToOne,
 } from '@mikro-orm/core'
-import DataImporter from '../../abstraction/DataImporter'
+import IAddress from '../../interface/model/data/IAddress'
+import ICategory from '../../interface/model/data/ICategory'
 import ICompany from '../../interface/model/data/ICompany'
-import DatabaseService from '../../service/DatabaseService'
-import Table from '../extends/Table'
+import IEmail from '../../interface/model/data/IEmail'
+import IPhonenumber from '../../interface/model/data/IPhonenumber'
+import ISocialmedia from '../../interface/model/data/ISocialmedia'
+import Global from '../../service/Global'
 import Address from './Address'
 import Category from './Category'
 import Contact from './Contact'
 import Email from './Email'
+import Table from './parents/Table'
 import Phonenumber from './Phonenumber'
 import Relationship from './Relationship'
 import RWStatus from './RWStatus'
 import Socialmedia from './Socialmedia'
 
 @Entity()
-export default class Company extends Table implements ICompany {
+export default class Company extends Table {
   @PrimaryKey()
-  id: number
-
+  id!: number
   @Property()
   name: string
-
-  @ManyToMany(() => Address, null, {
-    eager: true,
-  })
-  addresses = new Collection<Address>(this)
-
-  @ManyToMany(() => Email, null, { eager: true })
-  emails = new Collection<Email>(this)
-
-  @ManyToMany(() => Phonenumber, null, { eager: true })
-  phonenumbers = new Collection<Phonenumber>(this)
-
-  @ManyToOne(() => Contact, { eager: true })
-  contact_person?: Contact
-
-  @Property({ nullable: true })
-  websites?: string[]
-
-  @ManyToMany(() => Socialmedia, null, { eager: true })
-  social_medias = new Collection<Socialmedia>(this)
-
   @Property({ nullable: true })
   remarks?: string
-
-  @ManyToOne(() => RWStatus, { eager: true })
+  @Property({ nullable: true })
+  websites?: string[]
+  @ManyToOne(() => Contact, { eager: true, nullable: true })
+  contact_person?: Contact
+  @ManyToOne(() => RWStatus, { eager: true, nullable: true })
   rwstatus?: RWStatus
-
-  @ManyToOne(() => Relationship, { eager: true })
+  @ManyToOne(() => Relationship, { eager: true, nullable: true })
   relationship?: Relationship
+  @ManyToMany(() => Address, null, { eager: true, nullable: true })
+  addresses? = new Collection<Address>(this)
+  @ManyToMany(() => Email, null, { eager: true, nullable: true })
+  emails? = new Collection<Email>(this)
+  @ManyToMany(() => Phonenumber, null, { eager: true, nullable: true })
+  phonenumbers? = new Collection<Phonenumber>(this)
+  @ManyToMany(() => Socialmedia, null, { eager: true, nullable: true })
+  social_medias? = new Collection<Socialmedia>(this)
+  @ManyToMany(() => Category, null, { eager: true, nullable: true })
+  categories? = new Collection<Category>(this)
 
-  @ManyToMany(() => Category, null, { eager: true })
-  categories = new Collection<Category>(this)
-
-  constructor() {
-    super()
+  constructor(data: ICompany) {
+    super(data)
+    this.id = data?.id
+    this.name = data?.name
+    this.remarks = data?.remarks
+    this.websites = data?.websites
+    this.contact_person = (data?.contact_person as Contact) || null
+    this.rwstatus = (data?.rwstatus as RWStatus) || null
+    this.relationship = (data?.relationship as Relationship) || null
+    this.addresses.set(
+      (data?.addresses as IAddress[])
+        .filter((data) => data)
+        .map((data) => new Address(data))
+    )
+    this.emails.set(
+      (data?.emails as IEmail[])
+        .filter((data) => data)
+        .map((data) => new Email(data))
+    )
+    this.phonenumbers.set(
+      (data?.phonenumbers as IPhonenumber[])
+        .filter((data) => data)
+        .map((data) => new Phonenumber(data))
+    )
+    this.social_medias.set(
+      (data?.social_medias as ISocialmedia[])
+        .filter((data) => data)
+        .map((data) => new Socialmedia(data))
+    )
+    this.categories.set(
+      (data?.categories as ICategory[])
+        .filter((data) => data)
+        .map((data) => new Category(data))
+    )
   }
 
-  async init(data: ICompany, clear?: boolean) {
-    super.init(data)
-    if (!data) {
-      data = {}
-    }
-    if (data.id) {
-      this.id = data.id
-    }
-    this.name = data.name
+  public async refresh(data: ICompany) {
+    this.name = data?.name
+    this.remarks = data?.remarks
+    this.websites = data?.websites
 
-    if (data.addresses) {
-      if (clear) {
-        this.addresses.removeAll()
-      }
-      for (const address of data.addresses) {
-        let found: Address = DataImporter.getCache(
-          'company/addresses/' + JSON.stringify(address)
-        )
-        if (!found && address.id) {
-          found = await DatabaseService.findOne('data', Address, {
-            id: address.id,
-          })
-        }
-        if (!found) {
-          found = new Address()
-          DataImporter.setCache(
-            'company/addresses/' + JSON.stringify(address),
-            found
-          )
-        }
-        found = await found.init(address)
-        this.addresses.add(found)
-      }
-    }
+    this.contact_person
+      ? data?.contact_person?.id &&
+        (await this.contact_person.refresh(data.contact_person))
+      : (this.contact_person = data?.contact_person?.id
+          ? (data.contact_person as Contact)
+          : null)
+    this.rwstatus
+      ? data?.rwstatus?.uniquename &&
+        (await this.rwstatus.refresh(data.rwstatus))
+      : (this.rwstatus = data?.rwstatus?.uniquename
+          ? (data.rwstatus as RWStatus)
+          : null)
+    this.relationship
+      ? data?.relationship?.uniquename &&
+        (await this.relationship.refresh(data.relationship))
+      : (this.relationship = data?.relationship?.uniquename
+          ? (data.relationship as Relationship)
+          : null)
 
-    if (data.emails) {
-      if (clear) {
-        this.emails.removeAll()
-      }
-      for (const email of data.emails) {
-        let found: Email = DataImporter.getCache(
-          'company/emails/' + JSON.stringify(email)
-        )
-        if (!found && email.id) {
-          found = await DatabaseService.findOne('data', Email, {
-            id: email.id,
-          })
-        }
-        if (!found) {
-          found = new Email()
-          DataImporter.setCache(
-            'company/emails/' + JSON.stringify(email),
-            found
-          )
-        }
-        found = await found.init(email)
-        this.emails.add(found)
-      }
-    }
-
-    if (data.phonenumbers) {
-      if (clear) {
-        this.phonenumbers.removeAll()
-      }
-      for (const phonenumber of data.phonenumbers) {
-        let found: Phonenumber = DataImporter.getCache(
-          'company/phonenumbers/' + JSON.stringify(phonenumber)
-        )
-        if (!found && phonenumber.id) {
-          found = await DatabaseService.findOne('data', Phonenumber, {
-            id: phonenumber.id,
-          })
-        }
-        if (!found) {
-          found = new Phonenumber()
-          DataImporter.setCache(
-            'company/phonenumbers/' + JSON.stringify(phonenumber),
-            found
-          )
-        }
-        found = await found.init(phonenumber)
-        this.phonenumbers.add(found)
-      }
-    }
-
-    if (data && data.contact_person && data.contact_person.id) {
-      const existing: Contact = await DatabaseService.findOne('data', Contact, {
-        id: data.contact_person.id,
-      })
-      this.contact_person = existing
-        ? existing
-        : await new Contact().init(data.contact_person)
-    } else {
-      this.contact_person = undefined
-    }
-
-    this.websites = data.websites
-
-    if (data.social_medias) {
-      if (clear) {
-        this.social_medias.removeAll()
-      }
-      for (const sm of data.social_medias) {
-        let found: Socialmedia = DataImporter.getCache(
-          'company/social_medias/' + JSON.stringify(sm)
-        )
-        if (!found && sm.id) {
-          found = await DatabaseService.findOne('data', Socialmedia, {
-            id: sm.id,
-          })
-        }
-        if (!found) {
-          found = new Socialmedia()
-          DataImporter.setCache(
-            'company/social_medias/' + JSON.stringify(sm),
-            found
-          )
-        }
-        found = await found.init(sm)
-        this.social_medias.add(found)
-      }
-    }
-
-    this.remarks = data.remarks
-
-    if (data && data.rwstatus && data.rwstatus.uniquename) {
-      const existingRWStatus: RWStatus = await DatabaseService.findOne(
-        'data',
-        RWStatus,
-        {
-          uniquename: data.rwstatus.uniquename,
-        }
-      )
-      this.rwstatus = existingRWStatus
-        ? existingRWStatus
-        : await new RWStatus().init(data.rwstatus)
-    } else {
-      this.rwstatus = undefined
-    }
-
-    if (data && data.relationship && data.relationship.uniquename) {
-      const existingRelationship: Relationship = await DatabaseService.findOne(
-        'data',
-        Relationship,
-        {
-          uniquename: data.relationship.uniquename,
-        }
-      )
-      this.relationship = existingRelationship
-        ? existingRelationship
-        : await new Relationship().init(data.relationship)
-    } else {
-      this.relationship = undefined
-    }
-
-    if (data.categories) {
-      if (clear) {
-        this.categories.removeAll()
-      }
-      for (const category of data.categories) {
-        let found: Category = DataImporter.getCache(
-          'company/categories/' + JSON.stringify(category)
-        )
-        if (!found && category.uniquename) {
-          found = await DatabaseService.findOne('data', Category, {
-            uniquename: category.uniquename,
-          })
-        }
-        if (!found) {
-          found = new Category()
-          DataImporter.setCache(
-            'company/categories/' + JSON.stringify(category),
-            found
-          )
-        }
-        found = await found.init(category)
-        this.categories.add(found)
-      }
-    }
-
-    return this
+    await Global.setFreshCollection<Address, IAddress>(
+      this.addresses,
+      data?.addresses as IAddress[],
+      Address,
+      'id'
+    )
+    await Global.setFreshCollection<Email, IEmail>(
+      this.emails,
+      data?.emails as IEmail[],
+      Email,
+      'id'
+    )
+    await Global.setFreshCollection<Phonenumber, IPhonenumber>(
+      this.phonenumbers,
+      data?.phonenumbers as IPhonenumber[],
+      Phonenumber,
+      'id'
+    )
+    await Global.setFreshCollection<Socialmedia, ISocialmedia>(
+      this.social_medias,
+      data?.social_medias as ISocialmedia[],
+      Socialmedia,
+      'id'
+    )
+    await Global.setFreshCollection<Category, ICategory>(
+      this.categories,
+      data?.categories as ICategory[],
+      Category,
+      'uniquename'
+    )
   }
 
   public static getDatamodel() {
-    return Object.assign(super.getParentDatamodel(), {
+    return Object.assign(super.getDatamodel(), {
       __meta: {
         db: 'data',
         name: 'company',

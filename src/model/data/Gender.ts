@@ -1,31 +1,15 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core'
+import { Entity } from '@mikro-orm/core'
 import IGender from '../../interface/model/data/IGender'
-import Table from '../extends/Table'
+import UniquenameLabel from './parents/UniquenameLabel'
 
 @Entity()
-export default class Gender extends Table implements IGender {
-  @PrimaryKey()
-  uniquename: string
-
-  @Property()
-  label: string
-
-  constructor() {
-    super()
-  }
-
-  async init(data: IGender) {
-    super.init(data)
-    if (!data) {
-      data = {}
-    }
-    this.uniquename = data.uniquename
-    this.label = data.label
-    return this
+export default class Gender extends UniquenameLabel implements IGender {
+  constructor(data: IGender) {
+    super(data)
   }
 
   public static getDatamodel() {
-    return Object.assign(super.getParentDatamodel(), {
+    return Object.assign(super.getDatamodel(), {
       __meta: {
         db: 'data',
         name: 'gender',
@@ -35,15 +19,6 @@ export default class Gender extends Table implements IGender {
         isListable: true,
         parent: 1,
         sort: 'label',
-      },
-      uniquename: {
-        label: 'Eindeutiger Name',
-        type: 'string',
-        required: true,
-      },
-      label: {
-        label: 'Bezeichnung',
-        type: 'string',
       },
     })
   }

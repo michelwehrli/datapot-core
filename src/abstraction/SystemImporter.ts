@@ -1,4 +1,5 @@
 import IUser from '../interface/model/system/IUser'
+import Design from '../model/system/Design'
 import User from '../model/system/User'
 import DatabaseService from '../service/DatabaseService'
 
@@ -42,7 +43,7 @@ export default class SystemImporter {
       },
     ]
     for (const userData of users) {
-      await DatabaseService.insert('system', [await new User().init(userData)])
+      await DatabaseService.insert('system', [new User(userData)])
     }
   }
 }

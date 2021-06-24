@@ -4,6 +4,7 @@ import Category from '../../../model/data/Category'
 import Email from '../../../model/data/Email'
 import Phonenumber from '../../../model/data/Phonenumber'
 import Socialmedia from '../../../model/data/Socialmedia'
+import ITable from '../extends/ITable'
 import IAddress from './IAddress'
 import ICategory from './ICategory'
 import IContact from './IContact'
@@ -13,7 +14,7 @@ import IRelationship from './IRelationship'
 import IRWStatus from './IRWStatus'
 import ISocialmedia from './ISocialmedia'
 
-export default abstract class ICompany {
+export default abstract class ICompany extends ITable {
   abstract id?: number
   abstract name?: string
   abstract addresses?: Collection<Address> | IAddress[]

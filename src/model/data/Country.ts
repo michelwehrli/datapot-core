@@ -1,31 +1,15 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core'
+import { Entity } from '@mikro-orm/core'
 import ICountry from '../../interface/model/data/ICountry'
-import Table from '../extends/Table'
+import UniquenameLabel from './parents/UniquenameLabel'
 
 @Entity()
-export default class Country extends Table implements ICountry {
-  @PrimaryKey()
-  uniquename: string
-
-  @Property()
-  label: string
-
-  constructor() {
-    super()
-  }
-
-  async init(data: ICountry) {
-    super.init(data)
-    if (!data) {
-      data = {}
-    }
-    this.uniquename = data.uniquename
-    this.label = data.label
-    return this
+export default class Country extends UniquenameLabel implements ICountry {
+  constructor(data: ICountry) {
+    super(data)
   }
 
   public static getDatamodel() {
-    return Object.assign(super.getParentDatamodel(), {
+    return Object.assign(super.getDatamodel(), {
       __meta: {
         db: 'data',
         name: 'country',
@@ -35,15 +19,6 @@ export default class Country extends Table implements ICountry {
         isListable: true,
         parent: 2,
         sort: 'label',
-      },
-      uniquename: {
-        label: 'Eindeutiger Name',
-        type: 'string',
-        required: true,
-      },
-      label: {
-        label: 'Bezeichnung',
-        type: 'string',
       },
     })
   }

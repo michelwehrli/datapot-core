@@ -1,31 +1,15 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core'
+import { Entity } from '@mikro-orm/core'
 import ICounty from '../../interface/model/data/ICounty'
-import Table from '../extends/Table'
+import UniquenameLabel from './parents/UniquenameLabel'
 
 @Entity()
-export default class County extends Table implements ICounty {
-  @PrimaryKey()
-  uniquename: string
-
-  @Property()
-  label: string
-
-  constructor() {
-    super()
-  }
-
-  async init(data: ICounty) {
-    super.init(data)
-    if (!data) {
-      data = {}
-    }
-    this.uniquename = data.uniquename
-    this.label = data.label
-    return this
+export default class County extends UniquenameLabel implements ICounty {
+  constructor(data: ICounty) {
+    super(data)
   }
 
   public static getDatamodel() {
-    return Object.assign(super.getParentDatamodel(), {
+    return Object.assign(super.getDatamodel(), {
       __meta: {
         db: 'data',
         name: 'county',
@@ -35,15 +19,6 @@ export default class County extends Table implements ICounty {
         isListable: true,
         parent: 2,
         sort: 'label',
-      },
-      uniquename: {
-        label: 'Eindeutiger Name',
-        type: 'string',
-        required: true,
-      },
-      label: {
-        label: 'Bezeichnung',
-        type: 'string',
       },
     })
   }

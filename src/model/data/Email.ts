@@ -1,60 +1,33 @@
-import { Entity, PrimaryKey, Property, ManyToOne } from '@mikro-orm/core'
-import DataImporter from '../../abstraction/DataImporter'
+import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core'
 import IEmail from '../../interface/model/data/IEmail'
-import DatabaseService from '../../service/DatabaseService'
-import Table from '../extends/Table'
 import EmailType from './EmailType'
+import Table from './parents/Table'
 
 @Entity()
-export default class Email extends Table implements IEmail {
+export default class Email extends Table {
   @PrimaryKey()
-  id: number
-
+  id!: number
   @Property()
   address: string
-
-  @ManyToOne(() => EmailType, {
-    eager: true,
-  })
+  @ManyToOne(() => EmailType, { eager: true })
   type: EmailType
 
-  constructor() {
-    super()
+  constructor(data: IEmail) {
+    super(data)
+    this.id = data?.id
+    this.address = data?.address
+    this.type = data?.type as EmailType
   }
 
-  async init(data: IEmail) {
-    super.init(data)
-    if (!data) {
-      data = {}
-    }
-    if (data.id) {
-      this.id = data.id
-    }
-    this.address = data.address
-
-    if (data && data.type && data.type.uniquename) {
-      let existingType: EmailType
-      if (data && data.type) {
-        existingType = await DatabaseService.findOne('data', EmailType, {
-          uniquename: data.type.uniquename,
-        })
-      }
-      this.type = existingType
-        ? existingType
-        : DataImporter.getCache('email/type/' + JSON.stringify(data.type))
-        ? DataImporter.getCache('email/type/' + JSON.stringify(data.type))
-        : await new EmailType().init(data.type)
-      DataImporter.setCache(
-        'email/type/' + JSON.stringify(data.type),
-        this.type
-      )
-    }
-
-    return this
+  public async refresh(data: IEmail) {
+    this.address = data?.address
+    this.type
+      ? data?.type?.uniquename && (await this.type.refresh(data.type))
+      : (this.type = data?.type?.uniquename ? (data.type as EmailType) : null)
   }
 
   public static getDatamodel() {
-    return Object.assign(super.getParentDatamodel(), {
+    return Object.assign(super.getDatamodel(), {
       __meta: {
         db: 'data',
         name: 'email',

@@ -2,52 +2,37 @@ import { Entity, PrimaryKey, Property } from '@mikro-orm/core'
 import * as fs from 'fs'
 import * as shell from 'shelljs'
 import IDocument from '../../interface/model/system/IDocument'
-import Table from '../extends/Table'
+import Table from '../data/parents/Table'
 
 const thumb = require('node-thumbnail').thumb
 
 @Entity()
 export default class Document extends Table implements IDocument {
   @PrimaryKey()
-  id: number
-
+  id?: number
   @Property()
-  name: string
-
+  name?: string
   @Property({ nullable: true })
   document?: string
-
   @Property({ nullable: true })
   issecure?: boolean
-
   @Property({ nullable: true })
   url?: string
-
   @Property({ nullable: true })
   previewUrl?: string
 
-  constructor() {
-    super()
-  }
-
-  async init(data: IDocument) {
-    super.init(data)
-    if (!data) {
-      data = {}
-    }
+  constructor(data: IDocument) {
+    super(data)
     this.id = data.id
     this.name = data.name
     this.document = data.document
+    this.issecure = data.issecure
     this.url = data.url
     this.previewUrl = data.previewUrl
-    this.issecure = data.issecure
-
     this.createFile()
-
-    return this
   }
 
-  private createFile() {
+  private createFile(): void {
     if (this.document && !this.url) {
       const filetype: string = this.document
         .split('data:')[1]
@@ -86,7 +71,7 @@ export default class Document extends Table implements IDocument {
   }
 
   public static getDatamodel() {
-    return Object.assign(super.getParentDatamodel(), {
+    return Object.assign(super.getDatamodel(), {
       __meta: {
         db: 'system',
         name: 'document',

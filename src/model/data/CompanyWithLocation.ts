@@ -1,80 +1,36 @@
-import { Entity, PrimaryKey, ManyToOne } from '@mikro-orm/core'
-import DataImporter from '../../abstraction/DataImporter'
+import { Entity, ManyToOne, PrimaryKey } from '@mikro-orm/core'
 import ICompanyWithLocation from '../../interface/model/data/ICompanyWithLocation'
-import DatabaseService from '../../service/DatabaseService'
-import Table from '../extends/Table'
 import Address from './Address'
 import Company from './Company'
+import Table from './parents/Table'
 
 @Entity()
-export default class CompanyWithLocation extends Table
-  implements ICompanyWithLocation {
+export default class CompanyWithLocation extends Table {
   @PrimaryKey()
-  id?: number
-
+  id!: number
   @ManyToOne(() => Company, { eager: true })
-  company?: Company
-
-  @ManyToOne(() => Address, { eager: true })
+  company: Company
+  @ManyToOne(() => Address, { eager: true, nullable: true })
   address?: Address
 
-  constructor() {
-    super()
+  constructor(data: ICompanyWithLocation) {
+    super(data)
+    this.id = data?.id
+    this.company = (data?.company as Company) || null
+    this.address = (data?.address as Address) || null
   }
 
-  async init(data: ICompanyWithLocation, clear?: boolean) {
-    super.init(data)
-    if (!data) {
-      data = {}
-    }
-    if (data.id) {
-      this.id = data.id
-    }
-    if (data.company) {
-      let found: Company = DataImporter.getCache(
-        'companywithlocation/company/' + data.company.name
-      )
-      if (!found && data.company.id) {
-        found = await DatabaseService.findOne('data', Company, {
-          id: data.company.id,
-        })
-      }
-      if (!found) {
-        found = new Company()
-      }
-      DataImporter.setCache(
-        'companywithlocation/company/' + data.company.name,
-        found
-      )
-      found = await found.init(data.company, clear)
-      this.company = found
-    }
-
-    if (data.address) {
-      let found: Address = DataImporter.getCache(
-        'company/addresses/' + JSON.stringify(data.address)
-      )
-      if (!found && data.address.id) {
-        found = await DatabaseService.findOne('data', Address, {
-          id: data.address.id,
-        })
-      }
-      if (!found) {
-        found = new Address()
-      }
-      DataImporter.setCache(
-        'company/addresses/' + JSON.stringify(data.address),
-        found
-      )
-      found = await found.init(data.address)
-      this.address = found
-    }
-
-    return this
+  public async refresh(data: ICompanyWithLocation) {
+    this.company
+      ? data?.company?.id && (await this.company.refresh(data.company))
+      : (this.company = data?.company?.id ? (data.company as Company) : null)
+    this.address
+      ? data?.address?.id && (await this.address.refresh(data.address))
+      : (this.address = data?.address?.id ? (data.address as Address) : null)
   }
 
   public static getDatamodel() {
-    return Object.assign(super.getParentDatamodel(), {
+    return Object.assign(super.getDatamodel(), {
       __meta: {
         db: 'data',
         name: 'companyWithLocation',

@@ -1,31 +1,16 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core'
+import { Entity } from '@mikro-orm/core'
 import IPhonenumberLine from '../../interface/model/data/IPhonenumberLine'
-import Table from '../extends/Table'
+import UniquenameLabel from './parents/UniquenameLabel'
 
 @Entity()
-export default class PhonenumberLine extends Table implements IPhonenumberLine {
-  @PrimaryKey()
-  uniquename: string
-
-  @Property()
-  label: string
-
-  constructor() {
-    super()
-  }
-
-  async init(data: IPhonenumberLine) {
-    super.init(data)
-    if (!data) {
-      data = {}
-    }
-    this.uniquename = data.uniquename
-    this.label = data.label
-    return this
+export default class PhonenumberLine extends UniquenameLabel
+  implements IPhonenumberLine {
+  constructor(data: IPhonenumberLine) {
+    super(data)
   }
 
   public static getDatamodel() {
-    return Object.assign(super.getParentDatamodel(), {
+    return Object.assign(super.getDatamodel(), {
       __meta: {
         db: 'data',
         name: 'phonenumber_line',
@@ -35,15 +20,6 @@ export default class PhonenumberLine extends Table implements IPhonenumberLine {
         isListable: true,
         parent: 1,
         sort: 'label',
-      },
-      uniquename: {
-        label: 'Eindeutiger Name',
-        type: 'string',
-        required: true,
-      },
-      label: {
-        label: 'Bezeichnung',
-        type: 'string',
       },
     })
   }

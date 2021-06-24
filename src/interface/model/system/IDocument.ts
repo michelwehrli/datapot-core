@@ -1,4 +1,6 @@
-export default abstract class IDocument {
+import ITable from '../extends/ITable'
+
+export default abstract class IDocument extends ITable {
   abstract id?: number
   abstract name?: string
   abstract document?: string

@@ -6,16 +6,20 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core'
-
-import DataImporter from '../../abstraction/DataImporter'
+import IAddress from '../../interface/model/data/IAddress'
+import ICategory from '../../interface/model/data/ICategory'
+import ICompanyWithLocation from '../../interface/model/data/ICompanyWithLocation'
 import IContact from '../../interface/model/data/IContact'
-import DatabaseService from '../../service/DatabaseService'
-import Table from '../extends/Table'
+import IEmail from '../../interface/model/data/IEmail'
+import IPhonenumber from '../../interface/model/data/IPhonenumber'
+import ISocialmedia from '../../interface/model/data/ISocialmedia'
+import Global from '../../service/Global'
 import Address from './Address'
 import Category from './Category'
 import CompanyWithLocation from './CompanyWithLocation'
 import Email from './Email'
 import Gender from './Gender'
+import Table from './parents/Table'
 import Phonenumber from './Phonenumber'
 import Relationship from './Relationship'
 import RWStatus from './RWStatus'
@@ -26,324 +30,192 @@ import Title from './Title'
 @Entity()
 export default class Contact extends Table implements IContact {
   @PrimaryKey()
-  id: number
-
-  @Property({ nullable: true })
-  givenname?: string
-
-  @Property({ nullable: true })
-  surname?: string
-
-  @ManyToOne(() => Gender, { eager: true })
-  gender?: Gender
-
-  @ManyToOne(() => Salutation, { eager: true })
-  salutation?: Salutation
-
-  @ManyToOne(() => Title, { eager: true })
-  title?: Title
-
-  @Property({ nullable: true })
-  additional_names?: string[]
-
-  @ManyToMany(() => Address, null, { eager: true })
-  addresses = new Collection<Address>(this)
-
-  @ManyToMany(() => CompanyWithLocation, null, { eager: true })
-  companiesWithLocation = new Collection<CompanyWithLocation>(this)
-
-  @Property({ nullable: true })
-  department?: string
-
-  @Property({ nullable: true })
-  positions?: string[]
-
-  @ManyToMany(() => Phonenumber, null, { eager: true })
-  phonenumbers = new Collection<Phonenumber>(this)
-
-  @ManyToMany(() => Email, null, { eager: true })
-  emails = new Collection<Email>(this)
-
-  @ManyToOne(() => Contact, { eager: true })
-  partner: Contact
+  id!: number
+  @Property()
+  surname: string
 
   @Property({ nullable: true })
   birthdate?: number
-
+  @Property({ nullable: true })
+  givenname?: string
+  @Property({ nullable: true })
+  department?: string
+  @Property({ nullable: true })
+  remarks: string
+  @Property({ nullable: true })
+  additional_names?: string[]
   @Property({ nullable: true })
   websites?: string[]
-
-  @ManyToMany(() => Socialmedia, null, { eager: true })
-  social_medias = new Collection<Socialmedia>(this)
-
   @Property({ nullable: true })
-  remarks?: string
+  positions?: string[]
 
-  @ManyToOne(() => RWStatus, { eager: true })
+  @ManyToOne(() => Gender, { eager: true, nullable: true })
+  gender?: Gender
+  @ManyToOne(() => Salutation, { eager: true, nullable: true })
+  salutation?: Salutation
+  @ManyToOne(() => Title, { eager: true, nullable: true })
+  title?: Title
+  @ManyToOne(() => Contact, { eager: true, nullable: true })
+  partner?: Contact
+  @ManyToOne(() => RWStatus, { eager: true, nullable: true })
   rwstatus?: RWStatus
-
-  @ManyToOne(() => Relationship, { eager: true })
+  @ManyToOne(() => Relationship, { eager: true, nullable: true })
   relationship?: Relationship
 
-  @ManyToMany(() => Category, null, { eager: true })
-  categories = new Collection<Category>(this)
+  @ManyToMany(() => Address, null, { eager: true, nullable: true })
+  addresses? = new Collection<Address>(this)
+  @ManyToMany(() => CompanyWithLocation, null, { eager: true, nullable: true })
+  companiesWithLocation? = new Collection<CompanyWithLocation>(this)
+  @ManyToMany(() => Phonenumber, null, { eager: true, nullable: true })
+  phonenumbers? = new Collection<Phonenumber>(this)
+  @ManyToMany(() => Email, null, { eager: true, nullable: true })
+  emails? = new Collection<Email>(this)
+  @ManyToMany(() => Socialmedia, null, { eager: true, nullable: true })
+  social_medias? = new Collection<Socialmedia>(this)
+  @ManyToMany(() => Category, null, { eager: true, nullable: true })
+  categories? = new Collection<Category>(this)
 
-  constructor() {
-    super()
+  constructor(data: IContact) {
+    super(data)
+
+    this.id = data?.id
+    this.birthdate = data?.birthdate
+    this.givenname = data?.givenname
+    this.surname = data?.surname
+    this.department = data?.department
+    this.remarks = data?.remarks
+    this.additional_names = data?.additional_names
+    this.websites = data?.websites
+    this.positions = data?.positions
+
+    this.gender = (data?.gender as Gender) || null
+    this.salutation = (data?.salutation as Salutation) || null
+    this.title = (data?.title as Title) || null
+    this.partner = (data?.partner as Contact) || null
+    this.rwstatus = (data?.rwstatus as RWStatus) || null
+    this.relationship = (data?.relationship as Relationship) || null
+
+    data?.addresses &&
+      this.addresses.set(
+        (data?.addresses as IAddress[])
+          ?.filter((data) => !!data)
+          ?.map((data) => data as Address)
+      )
+    data?.companiesWithLocation &&
+      this.companiesWithLocation.set(
+        (data?.companiesWithLocation as ICompanyWithLocation[])
+          ?.filter((data) => !!data)
+          ?.map((data) => data as CompanyWithLocation)
+      )
+    data?.phonenumbers &&
+      this.phonenumbers.set(
+        (data?.phonenumbers as IPhonenumber[])
+          ?.filter((data) => !!data)
+          ?.map((data) => data as Phonenumber)
+      )
+    data?.emails &&
+      this.emails.set(
+        (data?.emails as IEmail[])
+          ?.filter((data) => !!data)
+          ?.map((data) => data as Email)
+      )
+    data?.social_medias &&
+      this.social_medias.set(
+        (data?.social_medias as ISocialmedia[])
+          ?.filter((data) => !!data)
+          ?.map((data) => data as Socialmedia)
+      )
+    data?.categories &&
+      this.categories.set(
+        (data?.categories as ICategory[])
+          ?.filter((data) => !!data)
+          ?.map((data) => data as Category)
+      )
   }
 
-  async init(data: IContact, clear?: boolean) {
-    super.init(data)
-    if (!data) {
-      data = {}
-    }
-    this.id = data.id
-    this.givenname = data.givenname
-    this.surname = data.surname
+  public async refresh(data: IContact) {
+    this.birthdate = data?.birthdate
+    this.givenname = data?.givenname
+    this.surname = data?.surname
+    this.department = data?.department
+    this.remarks = data?.remarks
+    this.additional_names = data?.additional_names
+    this.websites = data?.websites
+    this.positions = data?.positions
 
-    if (data && data.gender && data.gender.uniquename) {
-      const existingGender: Gender = await DatabaseService.findOne(
-        'data',
-        Gender,
-        {
-          uniquename: data.gender.uniquename,
-        }
-      )
-      this.gender = existingGender
-        ? existingGender
-        : await new Gender().init(data.gender)
-    }
+    this.gender
+      ? data?.gender?.uniquename && (await this.gender.refresh(data.gender))
+      : (this.gender = data?.gender?.uniquename
+          ? (data.gender as Gender)
+          : null)
+    this.salutation
+      ? data?.salutation?.uniquename &&
+        (await this.salutation.refresh(data.salutation))
+      : (this.salutation = data?.salutation?.uniquename
+          ? (data.salutation as Salutation)
+          : null)
+    this.title
+      ? data?.title?.uniquename && (await this.title.refresh(data.title))
+      : (this.title = data?.title?.uniquename ? (data.title as Title) : null)
+    this.partner
+      ? data?.partner?.id && (await this.partner.refresh(data.partner))
+      : (this.partner = data?.partner?.id ? (data.partner as Contact) : null)
+    this.rwstatus
+      ? data?.rwstatus?.uniquename &&
+        (await this.rwstatus.refresh(data.rwstatus))
+      : (this.rwstatus = data?.rwstatus?.uniquename
+          ? (data.rwstatus as RWStatus)
+          : null)
+    this.relationship
+      ? data?.relationship?.uniquename &&
+        (await this.relationship.refresh(data.relationship))
+      : (this.relationship = data?.relationship?.uniquename
+          ? (data.relationship as Relationship)
+          : null)
 
-    if (data && data.salutation && data.salutation.uniquename) {
-      const existingSalutation: Salutation = await DatabaseService.findOne(
-        'data',
-        Salutation,
-        {
-          uniquename: data.salutation.uniquename,
-        }
-      )
-      this.salutation = existingSalutation
-        ? existingSalutation
-        : await new Salutation().init(data.salutation)
-    }
-
-    if (data && data.title && data.title.uniquename) {
-      const existingTitle: Title = await DatabaseService.findOne(
-        'data',
-        Title,
-        {
-          uniquename: data.title.uniquename,
-        }
-      )
-      this.title = existingTitle
-        ? existingTitle
-        : await new Title().init(data.title)
-    }
-
-    this.additional_names = data.additional_names
-
-    if (data.addresses) {
-      if (clear) {
-        this.addresses.removeAll()
-      }
-      for (const address of data.addresses) {
-        let found: Address = DataImporter.getCache(
-          'contact/addresses/' + JSON.stringify(address)
-        )
-        if (!found && address.id) {
-          found = await DatabaseService.findOne('data', Address, {
-            id: address.id,
-          })
-        }
-        if (!found) {
-          found = new Address()
-          DataImporter.setCache(
-            'contact/addresses/' + JSON.stringify(address),
-            found
-          )
-        }
-        found = await found.init(address)
-        this.addresses.add(found)
-      }
-    }
-
-    if (data && data.partner && data.partner.id) {
-      const existing: Contact = await DatabaseService.findOne('data', Contact, {
-        id: data.partner.id,
-      })
-      this.partner = existing
-        ? existing
-        : await new Contact().init(data.partner)
-    }
-
-    if (data.companiesWithLocation) {
-      if (clear) {
-        this.companiesWithLocation.removeAll()
-      }
-      for (const companyWithLocation of data.companiesWithLocation) {
-        let found: CompanyWithLocation = DataImporter.getCache(
-          `contact/companieswithlocation/${JSON.stringify(companyWithLocation)}`
-        )
-        if (!found && companyWithLocation.id) {
-          found = await DatabaseService.findOne('data', CompanyWithLocation, {
-            id: companyWithLocation.id,
-          })
-        }
-        if (!found) {
-          found = new CompanyWithLocation()
-          DataImporter.setCache(
-            `contact/companieswithlocation/${JSON.stringify(
-              companyWithLocation
-            )}`,
-            found
-          )
-        }
-        found = await found.init(companyWithLocation, clear)
-        this.companiesWithLocation.add(found)
-      }
-    }
-
-    this.department = data.department
-
-    this.positions = data.positions
-
-    if (data.phonenumbers) {
-      if (clear) {
-        this.phonenumbers.removeAll()
-      }
-      for (const number of data.phonenumbers) {
-        let found: Phonenumber = DataImporter.getCache(
-          'contact/phonenumbers/' + JSON.stringify(number)
-        )
-        if (!found && number.id) {
-          found = await DatabaseService.findOne('data', Phonenumber, {
-            id: number.id,
-          })
-        }
-        if (!found) {
-          found = new Phonenumber()
-          DataImporter.setCache(
-            'contact/phonenumbers/' + JSON.stringify(number),
-            found
-          )
-        }
-        found = await found.init(number)
-        this.phonenumbers.add(found)
-      }
-    }
-
-    if (data.emails) {
-      if (clear) {
-        this.emails.removeAll()
-      }
-      for (const email of data.emails) {
-        let found: Email = DataImporter.getCache(
-          'contact/emails/' + JSON.stringify(email)
-        )
-        if (!found && email.id) {
-          found = await DatabaseService.findOne('data', Email, { id: email.id })
-        }
-        if (!found) {
-          found = new Email()
-          DataImporter.setCache(
-            'contact/emails/' + JSON.stringify(email),
-            found
-          )
-        }
-        found = await found.init(email)
-        this.emails.add(found)
-      }
-    }
-
-    this.birthdate = data.birthdate
-
-    this.websites = data.websites
-
-    if (data.social_medias) {
-      if (clear) {
-        this.social_medias.removeAll()
-      }
-      for (const sm of data.social_medias) {
-        let found: Socialmedia = DataImporter.getCache(
-          'contact/social_medias/' + JSON.stringify(sm)
-        )
-        if (!found && sm.id) {
-          found = await DatabaseService.findOne('data', Socialmedia, {
-            id: sm.id,
-          })
-        }
-        if (!found) {
-          found = new Socialmedia()
-          DataImporter.setCache(
-            'contact/social_medias/' + JSON.stringify(sm),
-            found
-          )
-        }
-        found = await found.init(sm)
-        this.social_medias.add(found)
-      }
-    }
-
-    this.remarks = data.remarks
-
-    if (data && data.rwstatus && data.rwstatus.uniquename) {
-      const existingRWStatus: RWStatus = await DatabaseService.findOne(
-        'data',
-        RWStatus,
-        {
-          uniquename: data.rwstatus.uniquename,
-        }
-      )
-      this.rwstatus = existingRWStatus
-        ? existingRWStatus
-        : await new RWStatus().init(data.rwstatus)
-    }
-
-    if (data && data.relationship && data.relationship.uniquename) {
-      const existingRelationship: Relationship = await DatabaseService.findOne(
-        'data',
-        Relationship,
-        {
-          uniquename: data.relationship.uniquename,
-        }
-      )
-      this.relationship = existingRelationship
-        ? existingRelationship
-        : await new Relationship().init(data.relationship)
-    }
-
-    if (data.categories) {
-      if (clear) {
-        this.categories.removeAll()
-      }
-      for (const category of data.categories) {
-        let found: Category = DataImporter.getCache(
-          'contact/categories/' + JSON.stringify(category)
-        )
-        if (!found && category.uniquename) {
-          found = await DatabaseService.findOne('data', Category, {
-            uniquename: category.uniquename,
-          })
-        }
-        if (!found) {
-          found = new Category()
-          DataImporter.setCache(
-            'contact/categories/' + JSON.stringify(category),
-            found
-          )
-        }
-        found = await found.init(category)
-        this.categories.add(found)
-      }
-    }
-    return this
+    await Global.setFreshCollection<Address, IAddress>(
+      this.addresses,
+      data?.addresses as IAddress[],
+      Address,
+      'id'
+    )
+    await Global.setFreshCollection<CompanyWithLocation, ICompanyWithLocation>(
+      this.companiesWithLocation,
+      data?.companiesWithLocation as ICompanyWithLocation[],
+      CompanyWithLocation,
+      'id'
+    )
+    await Global.setFreshCollection<Phonenumber, IPhonenumber>(
+      this.phonenumbers,
+      data?.phonenumbers as IPhonenumber[],
+      Phonenumber,
+      'id'
+    )
+    await Global.setFreshCollection<Email, IEmail>(
+      this.emails,
+      data?.emails as IEmail[],
+      Email,
+      'id'
+    )
+    await Global.setFreshCollection<Socialmedia, ISocialmedia>(
+      this.social_medias,
+      data?.social_medias as ISocialmedia[],
+      Socialmedia,
+      'id'
+    )
+    await Global.setFreshCollection<Category, ICategory>(
+      this.categories,
+      data?.categories as ICategory[],
+      Category,
+      'uniquename'
+    )
   }
 
   public static getDatamodel(alreadyCalled: boolean) {
     if (alreadyCalled) {
       return
     }
-    return Object.assign(super.getParentDatamodel(), {
+    return Object.assign(super.getDatamodel(), {
       __meta: {
         db: 'data',
         name: 'contact',

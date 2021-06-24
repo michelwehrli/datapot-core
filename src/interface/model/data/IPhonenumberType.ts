@@ -1,3 +1,3 @@
-import IKeyValue from '../extends/IKeyValue'
+import IUniquenameLabel from '../extends/IUniquenameLabel'
 
-export default abstract class IPhonenumberType extends IKeyValue {}
+export default abstract class IPhonenumberType extends IUniquenameLabel {}

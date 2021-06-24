@@ -1,3 +1,3 @@
-import IKeyValue from '../extends/IKeyValue'
+import IUniquenameLabel from '../extends/IUniquenameLabel'
 
-export default abstract class IDesign extends IKeyValue {}
+export default abstract class IDesign extends IUniquenameLabel {}

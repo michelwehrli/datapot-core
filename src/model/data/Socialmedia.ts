@@ -1,60 +1,35 @@
-import { Entity, PrimaryKey, Property, ManyToOne } from '@mikro-orm/core'
-import DataImporter from '../../abstraction/DataImporter'
+import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core'
 import ISocialmedia from '../../interface/model/data/ISocialmedia'
-import DatabaseService from '../../service/DatabaseService'
-import Table from '../extends/Table'
+import Table from './parents/Table'
 import SocialmediaType from './SocialmediaType'
 
 @Entity()
-export default class Socialmedia extends Table implements ISocialmedia {
+export default class Socialmedia extends Table {
   @PrimaryKey()
-  id: number
-
+  id!: number
   @Property()
   url: string
-
-  @ManyToOne(() => SocialmediaType, {
-    eager: true,
-  })
+  @ManyToOne(() => SocialmediaType, { eager: true })
   type: SocialmediaType
 
-  constructor() {
-    super()
+  constructor(data: ISocialmedia) {
+    super(data)
+    this.id = data?.id
+    this.url = data?.url
+    this.type = (data?.type as SocialmediaType) || null
   }
 
-  async init(data: ISocialmedia) {
-    super.init(data)
-    if (!data) {
-      data = {}
-    }
-    if (data.id) {
-      this.id = data.id
-    }
-    this.url = data.url
-
-    if (data && data.type && data.type.uniquename) {
-      let existingType: SocialmediaType
-      if (data && data.type) {
-        existingType = await DatabaseService.findOne('data', SocialmediaType, {
-          uniquename: data.type.uniquename,
-        })
-      }
-      this.type = existingType
-        ? existingType
-        : DataImporter.getCache('socialmedia/type/' + JSON.stringify(data.type))
-        ? DataImporter.getCache('socialmedia/type/' + JSON.stringify(data.type))
-        : await new SocialmediaType().init(data.type)
-      DataImporter.setCache(
-        'socialmedia/type/' + JSON.stringify(data.type),
-        this.type
-      )
-    }
-
-    return this
+  public async refresh(data: ISocialmedia) {
+    this.url = data?.url
+    this.type
+      ? data?.type?.uniquename && (await this.type.refresh(data.type))
+      : (this.type = data?.type?.uniquename
+          ? (data.type as SocialmediaType)
+          : null)
   }
 
   public static getDatamodel() {
-    return Object.assign(super.getParentDatamodel(), {
+    return Object.assign(super.getDatamodel(), {
       __meta: {
         db: 'data',
         name: 'socialmedia',

@@ -1,35 +1,30 @@
 import { Entity, PrimaryKey, Property } from '@mikro-orm/core'
 import IZip from '../../interface/model/data/IZip'
-import Table from '../extends/Table'
+import Table from './parents/Table'
 
 @Entity()
 export default class Zip extends Table implements IZip {
   @PrimaryKey()
-  id: number
-
+  id!: number
   @Property()
   zip: string
-
   @Property()
   location: string
 
-  constructor() {
-    super()
+  constructor(data: IZip) {
+    super(data)
+    this.id = data?.id
+    this.zip = data?.zip
+    this.location = data?.location
   }
 
-  async init(data: IZip) {
-    super.init(data)
-    if (!data) {
-      data = {}
-    }
-    this.id = data.id
-    this.zip = data.zip
-    this.location = data.location
-    return this
+  public async refresh(data: IZip) {
+    this.zip = data?.zip
+    this.location = data?.location
   }
 
   public static getDatamodel() {
-    return Object.assign(super.getParentDatamodel(), {
+    return Object.assign(super.getDatamodel(), {
       __meta: {
         db: 'data',
         name: 'zip',

@@ -1,4 +1,10 @@
-import { MikroORM, RequestContext } from '@mikro-orm/core'
+import {
+  Entity,
+  MikroORM,
+  Populate,
+  RequestContext,
+  wrap,
+} from '@mikro-orm/core'
 import bcrypt from 'bcrypt'
 import { Express } from 'express'
 import { NextFunction, Request, Response } from 'express'
@@ -6,13 +12,12 @@ import * as fs from 'fs'
 import * as jwt from 'jsonwebtoken'
 import * as mime from 'mime-types'
 import { OIDCStrategy } from 'passport-azure-ad'
+import { Database } from 'sqlite3'
 
 import Backupper from '../abstraction/Backupper'
 import CSVExporter from '../abstraction/CSVExport'
 import DataImporter from '../abstraction/DataImporter'
 import O365Exporter from '../abstraction/O365Exporter'
-import SystemImporter from '../abstraction/SystemImporter'
-import TargetedImporter from '../abstraction/TargetedImporter'
 import { AllEntities } from '../constants/Entities'
 import { ETypeIdentifier } from '../enums/ETypeIdentifier'
 import { ETypeMatch } from '../enums/ETypeMatch'
@@ -118,6 +123,7 @@ export default class Router {
     })
     await DatabaseService.setOrm('data', dataOrm)
 
+    /*
     if (!dataExists) {
       await DatabaseService.createSchema('data')
       await new DataImporter().init()
@@ -125,6 +131,7 @@ export default class Router {
     }
 
     await new TargetedImporter().init()
+    */
 
     await DatabaseService.updateSchema('data')
 
@@ -271,7 +278,7 @@ export default class Router {
             where
           )
 
-          await new ETypeMatch[req.params.table]().init(dbresult, true)
+          const resultObj = dbresult
 
           const secureFields = []
           Object.keys(ETypeMatch[req.params.table].getDatamodel()).forEach(
@@ -287,23 +294,23 @@ export default class Router {
             }
           )
           if (secureFields && secureFields.length) {
-            if (dbresult.forEach) {
-              dbresult.forEach((entry) => {
+            if (resultObj.forEach) {
+              resultObj.forEach((entry) => {
                 secureFields.forEach((secureField) => {
                   delete entry[secureField]
                 })
               })
             } else {
               secureFields.forEach((secureField) => {
-                delete dbresult[secureField]
+                delete resultObj[secureField]
               })
             }
           }
 
-          if (dbresult) {
-            let data = Array.isArray(dbresult)
-              ? dbresult.map((r) => Object.assign({}, r))
-              : Object.assign({}, dbresult)
+          if (resultObj) {
+            let data = Array.isArray(resultObj)
+              ? resultObj.map((r) => Object.assign({}, r))
+              : Object.assign({}, resultObj)
 
             result = {
               success: true,
@@ -380,14 +387,16 @@ export default class Router {
         if (req.params.identifier) {
           let where: any = {}
           where[ETypeIdentifier[req.params.table]] = req.params.identifier
+
           obj = await DatabaseService.findOne(
             req.params.database,
             ETypeMatch[req.params.table],
             where
           )
-          obj = await obj.init(req.body, true)
+
+          await obj?.refresh(req.body)
         } else {
-          obj = await new ETypeMatch[req.params.table]().init(req.body, true)
+          obj = new ETypeMatch[req.params.table](req.body)
         }
 
         try {

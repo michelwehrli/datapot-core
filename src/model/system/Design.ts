@@ -1,31 +1,15 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core'
+import { Entity } from '@mikro-orm/core'
 import IDesign from '../../interface/model/system/IDesign'
-import Table from '../extends/Table'
+import UniquenameLabel from '../data/parents/UniquenameLabel'
 
 @Entity()
-export default class Design extends Table implements IDesign {
-  @PrimaryKey()
-  uniquename: string
-
-  @Property()
-  label: string
-
-  constructor() {
-    super()
-  }
-
-  async init(data: IDesign) {
-    super.init(data)
-    if (!data) {
-      data = {}
-    }
-    this.uniquename = data.uniquename
-    this.label = data.label
-    return this
+export default class Design extends UniquenameLabel {
+  constructor(data: IDesign) {
+    super(data)
   }
 
   public static getDatamodel() {
-    return Object.assign(super.getParentDatamodel(), {
+    return Object.assign(super.getDatamodel(), {
       __meta: {
         db: 'system',
         name: 'design',
@@ -36,16 +20,6 @@ export default class Design extends Table implements IDesign {
         parent: 3,
         sort: 'label',
         superOnly: true,
-      },
-      uniquename: {
-        label: 'Eindeutiger Name',
-        type: 'string',
-        required: true,
-      },
-      label: {
-        label: 'Bezeichnung',
-        type: 'string',
-        required: true,
       },
     })
   }

@@ -1,134 +1,80 @@
 import { Entity, PrimaryKey, Property, ManyToOne } from '@mikro-orm/core'
-import IUser from '../../interface/model/system/IUser'
-import DatabaseService from '../../service/DatabaseService'
-import Table from '../extends/Table'
 import Design from './Design'
 import Document from './Document'
-import bcrypt from 'bcrypt'
+import Table from '../data/parents/Table'
+import IUser from '../../interface/model/system/IUser'
 
 @Entity()
-export default class User extends Table implements IUser {
+export default class User extends Table {
   @PrimaryKey()
   id: number
-
   @Property({ nullable: true })
   issuperuser: boolean
-
   @Property({ unique: true })
   username: string
-
   @Property({ nullable: true })
   givenname: string
-
   @Property({ nullable: true })
   surname: string
-
   @Property({ nullable: true })
   email: string
-
-  @ManyToOne(() => Document, {
-    eager: true,
-    nullable: true,
-  })
+  @ManyToOne(() => Document, { eager: true, nullable: true })
   image: Document
-
   @Property({ nullable: true })
   password: string
-
   @Property({ nullable: true })
   configuration: string
-
-  @ManyToOne(() => Design, {
-    eager: true,
-    nullable: true,
-  })
+  @ManyToOne(() => Design, { eager: true, nullable: true })
   design: Design
-
   @Property({ nullable: true })
   refresh_token: string
-
   @Property({ nullable: true })
   color: string
-
   @Property({ nullable: true })
   o365_oauth_token: string
-
   @Property({ nullable: true })
   o365_oaccess_token: string
 
-  constructor() {
-    super()
+  constructor(data: IUser) {
+    super(data)
+    this.id = data?.id
+    this.issuperuser = data?.issuperuser
+    this.username = data?.username
+    this.givenname = data?.givenname
+    this.surname = data?.surname
+    this.email = data?.email
+    this.password = data?.password
+    this.configuration = data?.configuration
+    this.refresh_token = data?.refresh_token
+    this.color = data?.color
+    this.o365_oauth_token = data?.o365_oauth_token
+    this.o365_oaccess_token = data?.o365_oaccess_token
+    this.image = data?.image as Document
+    this.design = data?.design as Design
   }
 
-  async init(data: IUser) {
-    super.init(data)
-    if (!data) {
-      data = {}
-    }
-    if (data.id) {
-      this.id = data.id
-    }
-    this.issuperuser = data.issuperuser
-    this.username = data.username
-    this.givenname = data.givenname
-    this.surname = data.surname
-    this.email = data.email
-    this.color = data.color
-    this.configuration = data.configuration
-
-    if (data.image && Object.keys(data.image).length) {
-      const existingImage: Document = await DatabaseService.findOne(
-        'system',
-        Document,
-        {
-          id: data.image.id,
-        }
-      )
-      this.image = existingImage
-        ? existingImage
-        : await new Document().init(data.image)
-    } else {
-      this.image = undefined
-    }
-
-    if (data.password) {
-      const hash = bcrypt.hashSync(data.password, 10)
-      this.password = hash
-    }
-    if (data.refresh_token) {
-      this.refresh_token = data.refresh_token
-    }
-    if (data.o365_oaccess_token) {
-      this.refresh_token = data.o365_oaccess_token
-    }
-    if (data.o365_oauth_token) {
-      this.refresh_token = data.o365_oauth_token
-    }
-
-    if (
-      data.design &&
-      Object.keys(data.design) &&
-      Object.keys(data.design).length
-    ) {
-      const existingDesign: Design = await DatabaseService.findOne(
-        'system',
-        Design,
-        {
-          uniquename: data.design.uniquename,
-        }
-      )
-      this.design = existingDesign
-        ? existingDesign
-        : await new Design().init(data.design)
-    } else {
-      this.design = undefined
-    }
-
-    return this
+  public async refresh(data: IUser) {
+    this.issuperuser = data?.issuperuser
+    this.username = data?.username
+    this.givenname = data?.givenname
+    this.surname = data?.surname
+    this.email = data?.email
+    this.password = data?.password
+    this.configuration = data?.configuration
+    this.refresh_token = data?.refresh_token
+    this.color = data?.color
+    this.o365_oauth_token = data?.o365_oauth_token
+    this.o365_oaccess_token = data?.o365_oaccess_token
+    this.image && data?.image
+      ? await this.image?.refresh(data.image)
+      : (this.image = (data.image as Document) || null)
+    this.design && data?.design
+      ? await this.design?.refresh(data.design)
+      : (this.design = (data.design as Design) || null)
   }
 
   public static getDatamodel() {
-    return Object.assign(super.getParentDatamodel(), {
+    return Object.assign(super.getDatamodel(), {
       __meta: {
         db: 'system',
         name: 'user',

@@ -1,7 +1,8 @@
+import ITable from '../extends/ITable'
 import IDesign from './IDesign'
 import IDocument from './IDocument'
 
-export default abstract class IUser {
+export default abstract class IUser extends ITable {
   abstract id?: number
   abstract issuperuser?: boolean
   abstract username?: string
