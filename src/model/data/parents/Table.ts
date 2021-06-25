@@ -1,4 +1,4 @@
-import { Entity, Property } from '@mikro-orm/core'
+import { Property } from '@mikro-orm/core'
 import ITable from '../../../interface/model/extends/ITable'
 
 export default class Table implements ITable {
@@ -10,11 +10,11 @@ export default class Table implements ITable {
   _defaultValue?: boolean
 
   constructor(data: ITable) {
-    //this._defaultValue = data?._defaultValue || null
+    this._defaultValue = data?._defaultValue || null
   }
 
   public refresh(data: ITable) {
-    //this._defaultValue = data._defaultValue || null
+    this._defaultValue = data._defaultValue || null
   }
 
   public static getDatamodel(alreadyCalled = false): any {

@@ -1,4 +1,4 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core'
+import { PrimaryKey, Property } from '@mikro-orm/core'
 import IUniquenameLabel from '../../../interface/model/extends/IUniquenameLabel'
 import Table from './Table'
 

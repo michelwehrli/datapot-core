@@ -40,10 +40,16 @@ export default class DatabaseService {
 
   public static async findOne<T>(name: string, T, where: any): Promise<T> {
     const result = await this.getOrm(name).em.findOne(T, where)
+    let partnerHandledOnce = false
 
     async function recursiveInit(obj: any) {
       if (obj) {
-        for (const prop of Object.getOwnPropertyNames(obj)) {
+        for (const prop of Object.getOwnPropertyNames(obj).filter(
+          (prop) => prop !== 'partner' && !partnerHandledOnce
+        )) {
+          if (prop === 'partner') {
+            partnerHandledOnce = true
+          }
           if (
             obj[prop] &&
             !Array.isArray(obj[prop]) &&
