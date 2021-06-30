@@ -3,6 +3,7 @@ import Design from './Design'
 import Document from './Document'
 import Table from '../data/parents/Table'
 import IUser from '../../interface/model/system/IUser'
+import DatabaseService from '../../service/DatabaseService'
 
 @Entity()
 export default class User extends Table {
@@ -35,8 +36,11 @@ export default class User extends Table {
   @Property({ nullable: true })
   o365_oaccess_token: string
 
-  constructor(data: IUser) {
-    super(data)
+  constructor() {
+    super()
+  }
+
+  public async create(data: IUser): Promise<User> {
     this.id = data?.id
     this.issuperuser = data?.issuperuser
     this.username = data?.username
@@ -49,28 +53,22 @@ export default class User extends Table {
     this.color = data?.color
     this.o365_oauth_token = data?.o365_oauth_token
     this.o365_oaccess_token = data?.o365_oaccess_token
-    this.image = data?.image as Document
-    this.design = data?.design as Design
-  }
 
-  public async refresh(data: IUser) {
-    this.issuperuser = data?.issuperuser
-    this.username = data?.username
-    this.givenname = data?.givenname
-    this.surname = data?.surname
-    this.email = data?.email
-    this.password = data?.password
-    this.configuration = data?.configuration
-    this.refresh_token = data?.refresh_token
-    this.color = data?.color
-    this.o365_oauth_token = data?.o365_oauth_token
-    this.o365_oaccess_token = data?.o365_oaccess_token
-    this.image && data?.image
-      ? await this.image?.refresh(data.image)
-      : (this.image = (data.image as Document) || null)
-    this.design && data?.design
-      ? await this.design?.refresh(data.design)
-      : (this.design = (data.design as Design) || null)
+    this.image =
+      (data?.image?.id &&
+        (await DatabaseService.findOne('data', Document, {
+          id: data.image.id,
+        }))) ||
+      (data?.image && (await new Document().create(data.image)))
+
+    this.design =
+      (data?.design?.uniquename &&
+        (await DatabaseService.findOne('data', Design, {
+          uniquename: data.design.uniquename,
+        }))) ||
+      (data?.design && (await new Design().create(data.design)))
+
+    return this
   }
 
   public static getDatamodel() {

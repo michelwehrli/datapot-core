@@ -463,7 +463,7 @@ export default class DataImporter {
             }),
           }
 
-          const contact = await new Contact(obj)
+          const contact = await new Contact().create(obj)
 
           if (`${obj.givenname ? `${obj.givenname} ` : ''}${obj.surname}`) {
             DataImporter.setCache(

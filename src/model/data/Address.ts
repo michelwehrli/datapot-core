@@ -1,6 +1,7 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core'
+import { Entity, ManyToOne, PrimaryKey, Property, wrap } from '@mikro-orm/core'
 import IAddress from '../../interface/model/data/IAddress'
 import IContact from '../../interface/model/data/IContact'
+import DatabaseService from '../../service/DatabaseService'
 import Country from './Country'
 import County from './County'
 import Table from './parents/Table'
@@ -23,34 +24,38 @@ export default class Address extends Table {
   @ManyToOne(() => Country, { eager: true, nullable: true })
   country?: Country
 
-  constructor(data: IAddress) {
-    super(data)
+  constructor() {
+    super()
+  }
+
+  public async create(data: IAddress): Promise<Address> {
     this.id = data?.id
     this.street = data?.street
     this.additionals = data?.additionals
     this.pobox = data?.pobox
-    this.zip = (data?.zip as Zip) || null
-    this.county = (data?.county as County) || null
-    this.country = (data?.country as Country) || null
-  }
 
-  public async refresh(data: IAddress) {
-    this.street = data?.street
-    this.additionals = data?.additionals
-    this.pobox = data?.pobox
-    this.zip
-      ? data?.zip?.id && (await this.zip.refresh(data.zip))
-      : (this.zip = data?.zip?.id ? (data.zip as Zip) : null)
-    this.county
-      ? data?.county?.uniquename && (await this.county.refresh(data.county))
-      : (this.county = data?.county?.uniquename
-          ? (data.county as County)
-          : null)
-    this.country
-      ? data?.country?.uniquename && (await this.country.refresh(data.country))
-      : (this.country = data?.country?.uniquename
-          ? (data.country as Country)
-          : null)
+    this.zip =
+      (data?.zip?.id &&
+        (await DatabaseService.findOne('data', Zip, {
+          id: data.zip.id,
+        }))) ||
+      (data?.zip && (await new Zip().create(data.zip)))
+
+    this.county =
+      (data?.county?.uniquename &&
+        (await DatabaseService.findOne('data', County, {
+          uniquename: data.county.uniquename,
+        }))) ||
+      (data?.county && (await new County().create(data.county)))
+
+    this.country =
+      (data?.country?.uniquename &&
+        (await DatabaseService.findOne('data', Country, {
+          uniquename: data.country.uniquename,
+        }))) ||
+      (data?.country && (await new Country().create(data.country)))
+
+    return this
   }
 
   public static getDatamodel() {

@@ -1,5 +1,6 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core'
 import IEmail from '../../interface/model/data/IEmail'
+import DatabaseService from '../../service/DatabaseService'
 import EmailType from './EmailType'
 import Table from './parents/Table'
 
@@ -12,18 +13,21 @@ export default class Email extends Table {
   @ManyToOne(() => EmailType, { eager: true })
   type: EmailType
 
-  constructor(data: IEmail) {
-    super(data)
-    this.id = data?.id
-    this.address = data?.address
-    this.type = data?.type as EmailType
+  constructor() {
+    super()
   }
 
-  public async refresh(data: IEmail) {
+  public async create(data: IEmail): Promise<Email> {
+    this.id = data?.id
     this.address = data?.address
-    this.type
-      ? data?.type?.uniquename && (await this.type.refresh(data.type))
-      : (this.type = data?.type?.uniquename ? (data.type as EmailType) : null)
+    this.type =
+      (data?.type?.uniquename &&
+        (await DatabaseService.findOne('data', EmailType, {
+          uniquename: data.type.uniquename,
+        }))) ||
+      (data?.type && (await new EmailType().create(data.type)))
+
+    return this
   }
 
   public static getDatamodel() {

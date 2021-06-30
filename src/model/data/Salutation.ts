@@ -4,8 +4,8 @@ import UniquenameLabel from './parents/UniquenameLabel'
 
 @Entity()
 export default class Salutation extends UniquenameLabel implements ISalutation {
-  constructor(data: ISalutation) {
-    super(data)
+  constructor() {
+    super()
   }
 
   public static getDatamodel() {

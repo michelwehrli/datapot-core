@@ -9,12 +9,11 @@ export default class Table implements ITable {
   @Property({ nullable: true })
   _defaultValue?: boolean
 
-  constructor(data: ITable) {
-    this._defaultValue = data?._defaultValue || null
-  }
+  constructor() {}
 
-  public refresh(data: ITable) {
-    this._defaultValue = data._defaultValue || null
+  public async create(data: ITable): Promise<Table> {
+    this._defaultValue = data?._defaultValue || false
+    return this
   }
 
   public static getDatamodel(alreadyCalled = false): any {

@@ -4,8 +4,8 @@ import UniquenameLabel from './parents/UniquenameLabel'
 
 @Entity()
 export default class Gender extends UniquenameLabel implements IGender {
-  constructor(data: IGender) {
-    super(data)
+  constructor() {
+    super()
   }
 
   public static getDatamodel() {

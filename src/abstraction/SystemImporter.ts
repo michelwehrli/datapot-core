@@ -43,7 +43,9 @@ export default class SystemImporter {
       },
     ]
     for (const userData of users) {
-      await DatabaseService.insert('system', [new User(userData)])
+      await DatabaseService.insert('system', [
+        await new User().create(userData),
+      ])
     }
   }
 }

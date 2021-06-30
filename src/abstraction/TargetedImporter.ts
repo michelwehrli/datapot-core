@@ -33,7 +33,7 @@ export default class TargetedImporter {
 
     const initedInstances = []
     for (let i of instances) {
-      const z = new Zip({
+      const z = await new Zip().create({
         location: i.ortbez27,
         zip: i.postleitzahl,
       })

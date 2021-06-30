@@ -4,8 +4,8 @@ import UniquenameLabel from './parents/UniquenameLabel'
 
 @Entity()
 export default class Title extends UniquenameLabel implements ITitle {
-  constructor(data: ITitle) {
-    super(data)
+  constructor() {
+    super()
   }
 
   public static getDatamodel() {

@@ -11,11 +11,15 @@ export default class Zip extends Table implements IZip {
   @Property()
   location: string
 
-  constructor(data: IZip) {
-    super(data)
+  constructor() {
+    super()
+  }
+
+  public async create(data: IZip): Promise<Zip> {
     this.id = data?.id
     this.zip = data?.zip
     this.location = data?.location
+    return this
   }
 
   public async refresh(data: IZip) {

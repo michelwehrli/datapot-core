@@ -8,16 +8,14 @@ export default class UniquenameLabel extends Table implements IUniquenameLabel {
   @Property()
   label: string
 
-  constructor(data: IUniquenameLabel) {
-    super(data)
-    this.uniquename = data?.uniquename
-    this.label = data?.label
+  constructor() {
+    super()
   }
 
-  public refresh(data: IUniquenameLabel) {
-    super.refresh(data)
+  public async create(data: IUniquenameLabel): Promise<UniquenameLabel> {
     this.uniquename = data?.uniquename
     this.label = data?.label
+    return this
   }
 
   public static getDatamodel() {

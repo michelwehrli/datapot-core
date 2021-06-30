@@ -1,5 +1,6 @@
-import { Entity, ManyToOne, PrimaryKey } from '@mikro-orm/core'
+import { Entity, ManyToOne, PrimaryKey, wrap } from '@mikro-orm/core'
 import ICompanyWithLocation from '../../interface/model/data/ICompanyWithLocation'
+import DatabaseService from '../../service/DatabaseService'
 import Address from './Address'
 import Company from './Company'
 import Table from './parents/Table'
@@ -13,20 +14,28 @@ export default class CompanyWithLocation extends Table {
   @ManyToOne(() => Address, { eager: true, nullable: true })
   address?: Address
 
-  constructor(data: ICompanyWithLocation) {
-    super(data)
-    this.id = data?.id
-    this.company = (data?.company as Company) || null
-    this.address = (data?.address as Address) || null
+  constructor() {
+    super()
   }
 
-  public async refresh(data: ICompanyWithLocation) {
-    this.company
-      ? data?.company?.id && (await this.company.refresh(data.company))
-      : (this.company = data?.company?.id ? (data.company as Company) : null)
-    this.address
-      ? data?.address?.id && (await this.address.refresh(data.address))
-      : (this.address = data?.address?.id ? (data.address as Address) : null)
+  public async create(
+    data: ICompanyWithLocation
+  ): Promise<CompanyWithLocation> {
+    this.id = data?.id
+    this.company =
+      (data?.company?.id &&
+        (await DatabaseService.findOne('data', Company, {
+          id: data.company.id,
+        }))) ||
+      (data?.company && (await new Company().create(data.company)))
+    this.address =
+      (data?.address?.id &&
+        (await DatabaseService.findOne('data', Address, {
+          id: data.address.id,
+        }))) ||
+      (data?.address && (await new Address().create(data.address)))
+
+    return this
   }
 
   public static getDatamodel() {

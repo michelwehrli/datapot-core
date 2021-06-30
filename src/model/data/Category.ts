@@ -4,8 +4,8 @@ import UniquenameLabel from './parents/UniquenameLabel'
 
 @Entity()
 export default class Category extends UniquenameLabel implements ICategory {
-  constructor(data: ICategory) {
-    super(data)
+  constructor() {
+    super()
   }
 
   public static getDatamodel() {

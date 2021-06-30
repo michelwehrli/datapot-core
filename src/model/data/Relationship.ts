@@ -5,8 +5,8 @@ import UniquenameLabel from './parents/UniquenameLabel'
 @Entity()
 export default class Relationship extends UniquenameLabel
   implements IRelationship {
-  constructor(data: IRelationship) {
-    super(data)
+  constructor() {
+    super()
   }
 
   public static getDatamodel() {

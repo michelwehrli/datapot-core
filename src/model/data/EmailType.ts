@@ -4,8 +4,8 @@ import UniquenameLabel from './parents/UniquenameLabel'
 
 @Entity()
 export default class EmailType extends UniquenameLabel implements IEmailType {
-  constructor(data: IEmailType) {
-    super(data)
+  constructor() {
+    super()
   }
 
   public static getDatamodel() {

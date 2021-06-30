@@ -4,8 +4,8 @@ import UniquenameLabel from './parents/UniquenameLabel'
 
 @Entity()
 export default class RWStatus extends UniquenameLabel implements IRWStatus {
-  constructor(data: IRWStatus) {
-    super(data)
+  constructor() {
+    super()
   }
 
   public static getDatamodel() {

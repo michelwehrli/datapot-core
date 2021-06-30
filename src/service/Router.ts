@@ -251,6 +251,7 @@ export default class Router {
       async (req: Request, res: Response, next: NextFunction) => {
         countr = 0
         let result: IRestError | IRestSuccess
+        const identifier = req.params?.identifier?.split('q!!').join('?')
 
         if (!req.params.key || !req.params.table) {
           result = {
@@ -264,12 +265,12 @@ export default class Router {
 
         try {
           let where: any
-          if (req.params.identifier) {
+          if (identifier) {
             where = {}
-            where[ETypeIdentifier[req.params.table]] = req.params.identifier
+            where[ETypeIdentifier[req.params.table]] = identifier
           }
           let method = 'find'
-          if (req.params.identifier) {
+          if (identifier) {
             method = 'findOne'
           }
           const dbresult: any = await DatabaseService[method](
@@ -277,8 +278,6 @@ export default class Router {
             ETypeMatch[req.params.table],
             where
           )
-
-          const resultObj = dbresult
 
           const secureFields = []
           Object.keys(ETypeMatch[req.params.table].getDatamodel()).forEach(
@@ -294,23 +293,23 @@ export default class Router {
             }
           )
           if (secureFields && secureFields.length) {
-            if (resultObj.forEach) {
-              resultObj.forEach((entry) => {
+            if (dbresult.forEach) {
+              dbresult.forEach((entry) => {
                 secureFields.forEach((secureField) => {
                   delete entry[secureField]
                 })
               })
             } else {
               secureFields.forEach((secureField) => {
-                delete resultObj[secureField]
+                delete dbresult[secureField]
               })
             }
           }
 
-          if (resultObj) {
-            let data = Array.isArray(resultObj)
-              ? resultObj.map((r) => Object.assign({}, r))
-              : Object.assign({}, resultObj)
+          if (dbresult) {
+            let data = Array.isArray(dbresult)
+              ? dbresult.map((r) => Object.assign({}, r))
+              : Object.assign({}, dbresult)
 
             result = {
               success: true,
@@ -382,21 +381,21 @@ export default class Router {
         DataImporter.clearCache()
 
         let result: IRestError | IRestSuccess
+        const identifier = req.params?.identifier?.split('q!!').join('?')
 
         let obj
-        if (req.params.identifier) {
+        if (identifier) {
           let where: any = {}
-          where[ETypeIdentifier[req.params.table]] = req.params.identifier
+          where[ETypeIdentifier[req.params.table]] = identifier
 
           obj = await DatabaseService.findOne(
             req.params.database,
             ETypeMatch[req.params.table],
             where
           )
-
-          await obj?.refresh(req.body)
+          obj = await obj.create(req.body)
         } else {
-          obj = new ETypeMatch[req.params.table](req.body)
+          obj = await new ETypeMatch[req.params.table]().create(req.body)
         }
 
         try {

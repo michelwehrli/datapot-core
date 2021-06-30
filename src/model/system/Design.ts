@@ -1,11 +1,10 @@
 import { Entity } from '@mikro-orm/core'
-import IDesign from '../../interface/model/system/IDesign'
 import UniquenameLabel from '../data/parents/UniquenameLabel'
 
 @Entity()
 export default class Design extends UniquenameLabel {
-  constructor(data: IDesign) {
-    super(data)
+  constructor() {
+    super()
   }
 
   public static getDatamodel() {

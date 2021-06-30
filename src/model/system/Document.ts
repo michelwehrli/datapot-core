@@ -21,8 +21,11 @@ export default class Document extends Table implements IDocument {
   @Property({ nullable: true })
   previewUrl?: string
 
-  constructor(data: IDocument) {
-    super(data)
+  constructor() {
+    super()
+  }
+
+  public async create(data: IDocument): Promise<Document> {
     this.id = data.id
     this.name = data.name
     this.document = data.document
@@ -30,6 +33,7 @@ export default class Document extends Table implements IDocument {
     this.url = data.url
     this.previewUrl = data.previewUrl
     this.createFile()
+    return this
   }
 
   private createFile(): void {

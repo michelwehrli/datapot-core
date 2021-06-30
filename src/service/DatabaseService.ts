@@ -1,5 +1,7 @@
 import 'reflect-metadata'
 import { LoadStrategy, MikroORM, wrap } from '@mikro-orm/core'
+import { isObject } from 'util'
+import Contact from '../model/data/Contact'
 
 export default class DatabaseService {
   public static dataOrm: MikroORM
@@ -20,6 +22,10 @@ export default class DatabaseService {
     }
   }
 
+  public static getEm(name: string) {
+    return this.getOrm(name).em
+  }
+
   public static async createSchema(name: string): Promise<void> {
     const generator = this.getOrm(name).getSchemaGenerator()
     await generator.createSchema()
@@ -35,52 +41,12 @@ export default class DatabaseService {
   }
 
   public static async find<T>(name: string, T, where?: any): Promise<T[]> {
-    return await this.getOrm(name).em.find(T, where, {})
+    return await this.getOrm(name).em.find<T>(T, where, {})
   }
 
   public static async findOne<T>(name: string, T, where: any): Promise<T> {
-    const result = await this.getOrm(name).em.findOne(T, where)
-    let partnerHandledOnce = false
-
-    async function recursiveInit(obj: any) {
-      if (obj) {
-        for (const prop of Object.getOwnPropertyNames(obj).filter(
-          (prop) => prop !== 'partner' && !partnerHandledOnce
-        )) {
-          if (prop === 'partner') {
-            partnerHandledOnce = true
-          }
-          if (
-            obj[prop] &&
-            !Array.isArray(obj[prop]) &&
-            typeof obj[prop] === 'object' &&
-            wrap(obj[prop])?.init
-          ) {
-            await wrap(obj[prop]).init()
-            await recursiveInit(obj[prop])
-          } else if (obj[prop] && obj[prop].forEach) {
-            for (const inner of obj[prop]) {
-              await recursiveInit(inner)
-            }
-          } else if (obj[prop] && obj[prop].toArray) {
-            for (const inner of obj[prop]) {
-              if (wrap(inner)?.init) {
-                await wrap(inner).init()
-              }
-            }
-          }
-        }
-      }
-    }
-    if (!Array.isArray(result)) {
-      await recursiveInit(result)
-    } else {
-      for (const entry of result) {
-        await recursiveInit(entry)
-      }
-    }
-
-    return result
+    const paths = T && T.getNestedPaths ? T?.getNestedPaths() : []
+    return await this.getOrm(name).em.findOne<T>(T, where, paths)
   }
 
   public static async remove<T>(name: string, items: T[]): Promise<any> {

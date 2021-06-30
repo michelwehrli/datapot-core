@@ -4,8 +4,8 @@ import UniquenameLabel from './parents/UniquenameLabel'
 
 @Entity()
 export default class County extends UniquenameLabel implements ICounty {
-  constructor(data: ICounty) {
-    super(data)
+  constructor() {
+    super()
   }
 
   public static getDatamodel() {

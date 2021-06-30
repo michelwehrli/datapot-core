@@ -5,8 +5,8 @@ import UniquenameLabel from './parents/UniquenameLabel'
 @Entity()
 export default class SocialmediaType extends UniquenameLabel
   implements ISocialmediaType {
-  constructor(data: ISocialmediaType) {
-    super(data)
+  constructor() {
+    super()
   }
 
   public static getDatamodel() {

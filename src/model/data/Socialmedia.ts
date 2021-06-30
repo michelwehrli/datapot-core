@@ -1,5 +1,6 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core'
 import ISocialmedia from '../../interface/model/data/ISocialmedia'
+import DatabaseService from '../../service/DatabaseService'
 import Table from './parents/Table'
 import SocialmediaType from './SocialmediaType'
 
@@ -12,20 +13,20 @@ export default class Socialmedia extends Table {
   @ManyToOne(() => SocialmediaType, { eager: true })
   type: SocialmediaType
 
-  constructor(data: ISocialmedia) {
-    super(data)
-    this.id = data?.id
-    this.url = data?.url
-    this.type = (data?.type as SocialmediaType) || null
+  constructor() {
+    super()
   }
 
-  public async refresh(data: ISocialmedia) {
+  public async create(data: ISocialmedia): Promise<Socialmedia> {
+    this.id = data?.id
     this.url = data?.url
-    this.type
-      ? data?.type?.uniquename && (await this.type.refresh(data.type))
-      : (this.type = data?.type?.uniquename
-          ? (data.type as SocialmediaType)
-          : null)
+    this.type =
+      (data?.type?.uniquename &&
+        (await DatabaseService.findOne('data', SocialmediaType, {
+          uniquename: data.type.uniquename,
+        }))) ||
+      (data?.type && (await new SocialmediaType().create(data.type)))
+    return this
   }
 
   public static getDatamodel() {

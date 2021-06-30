@@ -5,8 +5,8 @@ import UniquenameLabel from './parents/UniquenameLabel'
 @Entity()
 export default class PhonenumberLine extends UniquenameLabel
   implements IPhonenumberLine {
-  constructor(data: IPhonenumberLine) {
-    super(data)
+  constructor() {
+    super()
   }
 
   public static getDatamodel() {

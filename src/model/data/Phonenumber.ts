@@ -1,11 +1,15 @@
+import { Phone } from '@microsoft/microsoft-graph-types'
 import {
   Entity,
   LoadStrategy,
   ManyToOne,
   PrimaryKey,
   Property,
+  wrap,
 } from '@mikro-orm/core'
+import { Database } from 'sqlite3'
 import IPhonenumber from '../../interface/model/data/IPhonenumber'
+import DatabaseService from '../../service/DatabaseService'
 import Table from './parents/Table'
 import PhonenumberLine from './PhonenumberLine'
 import PhonenumberType from './PhonenumberType'
@@ -21,26 +25,28 @@ export default class Phonenumber extends Table {
   @ManyToOne(() => PhonenumberLine, { eager: true })
   line: PhonenumberLine
 
-  constructor(data: IPhonenumber) {
-    super(data)
-    this.id = data?.id
-    this.number = data?.number
-    this.type = (data?.type as PhonenumberType) || null
-    this.line = (data?.line as PhonenumberLine) || null
+  constructor() {
+    super()
   }
 
-  public async refresh(data: IPhonenumber) {
+  public async create(data: IPhonenumber): Promise<Phonenumber> {
+    this.id = data?.id
     this.number = data?.number
-    this.type
-      ? data?.type?.uniquename && (await this.type.refresh(data.type))
-      : (this.type = data?.type?.uniquename
-          ? (data.type as PhonenumberType)
-          : null)
-    this.line
-      ? data?.line?.uniquename && (await this.line.refresh(data.line))
-      : (this.line = data?.line?.uniquename
-          ? (data.line as PhonenumberLine)
-          : null)
+
+    this.type =
+      (data?.type?.uniquename &&
+        (await DatabaseService.findOne('data', PhonenumberType, {
+          uniquename: data.type.uniquename,
+        }))) ||
+      (data?.type && (await new PhonenumberType().create(data.type)))
+    this.line =
+      (data?.line?.uniquename &&
+        (await DatabaseService.findOne('data', PhonenumberLine, {
+          uniquename: data.line.uniquename,
+        }))) ||
+      (data?.line && (await new PhonenumberLine().create(data.line)))
+
+    return this
   }
 
   public static getDatamodel() {
