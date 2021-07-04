@@ -36,6 +36,8 @@ export default class Contact extends Table implements IContact {
   @Property({ nullable: true })
   department?: string
   @Property({ nullable: true })
+  profession?: string
+  @Property({ nullable: true })
   remarks: string
   @Property({ nullable: true })
   additional_names?: string[]
@@ -80,48 +82,55 @@ export default class Contact extends Table implements IContact {
     this.givenname = data?.givenname
     this.surname = data?.surname
     this.department = data?.department
+    this.profession = data?.profession
     this.remarks = data?.remarks
     this.additional_names = data?.additional_names
     this.websites = data?.websites
     this.positions = data?.positions
 
     this.gender =
-      (data?.gender?.uniquename &&
+      data?.gender &&
+      ((data?.gender?.uniquename &&
         (await DatabaseService.findOne('data', Gender, {
           uniquename: data.gender.uniquename,
         }))) ||
-      (data?.gender && (await new Gender().create(data.gender)))
+        (data?.gender && (await new Gender().create(data.gender))))
     this.salutation =
-      (data?.salutation?.uniquename &&
+      data?.salutation &&
+      ((data?.salutation?.uniquename &&
         (await DatabaseService.findOne('data', Salutation, {
           uniquename: data.salutation.uniquename,
         }))) ||
-      (data?.salutation && (await new Salutation().create(data.salutation)))
+        (data?.salutation && (await new Salutation().create(data.salutation))))
     this.title =
-      (data?.title?.uniquename &&
+      data?.title &&
+      ((data?.title?.uniquename &&
         (await DatabaseService.findOne('data', Title, {
           uniquename: data.title.uniquename,
         }))) ||
-      (data?.title && (await new Title().create(data.title)))
+        (data?.title && (await new Title().create(data.title))))
     this.partner =
-      (data?.partner?.id &&
+      data?.partner &&
+      ((data?.partner?.id &&
         (await DatabaseService.findOne('data', Contact, {
           id: data.partner.id,
         }))) ||
-      (data?.partner && (await new Contact().create(data.partner)))
+        (data?.partner && (await new Contact().create(data.partner))))
     this.rwstatus =
-      (data?.rwstatus?.uniquename &&
+      data?.rwstatus &&
+      ((data?.rwstatus?.uniquename &&
         (await DatabaseService.findOne('data', RWStatus, {
           uniquename: data.rwstatus.uniquename,
         }))) ||
-      (data?.rwstatus && (await new RWStatus().create(data.rwstatus)))
+        (data?.rwstatus && (await new RWStatus().create(data.rwstatus))))
     this.relationship =
-      (data?.relationship?.uniquename &&
+      data?.relationship &&
+      ((data?.relationship?.uniquename &&
         (await DatabaseService.findOne('data', Relationship, {
           uniquename: data.relationship.uniquename,
         }))) ||
-      (data?.relationship &&
-        (await new Relationship().create(data.relationship)))
+        (data?.relationship &&
+          (await new Relationship().create(data.relationship))))
 
     this.addresses.set(
       await Global.getCollection<Address>(data.addresses as any, 'id', Address)
@@ -172,6 +181,9 @@ export default class Contact extends Table implements IContact {
       'phonenumbers.line',
       'social_medias.type',
       'companiesWithLocation.address',
+      'companiesWithLocation.address.zip',
+      'companiesWithLocation.address.county',
+      'companiesWithLocation.address.country',
       'companiesWithLocation.company',
     ]
   }
@@ -235,6 +247,10 @@ export default class Contact extends Table implements IContact {
       },
       department: {
         label: 'Abteilung',
+        type: 'string',
+      },
+      profession: {
+        label: 'Berufe',
         type: 'string',
       },
       positions: {

@@ -34,17 +34,19 @@ export default class Phonenumber extends Table {
     this.number = data?.number
 
     this.type =
-      (data?.type?.uniquename &&
+      data?.type &&
+      ((data?.type?.uniquename &&
         (await DatabaseService.findOne('data', PhonenumberType, {
           uniquename: data.type.uniquename,
         }))) ||
-      (data?.type && (await new PhonenumberType().create(data.type)))
+        (data?.type && (await new PhonenumberType().create(data.type))))
     this.line =
-      (data?.line?.uniquename &&
+      data?.line &&
+      ((data?.line?.uniquename &&
         (await DatabaseService.findOne('data', PhonenumberLine, {
           uniquename: data.line.uniquename,
         }))) ||
-      (data?.line && (await new PhonenumberLine().create(data.line)))
+        (data?.line && (await new PhonenumberLine().create(data.line))))
 
     return this
   }
@@ -72,12 +74,10 @@ export default class Phonenumber extends Table {
       type: {
         label: 'Typ',
         type: PhonenumberType.getDatamodel(),
-        required: true,
       },
       line: {
         label: 'Methode',
         type: PhonenumberLine.getDatamodel(),
-        required: true,
       },
     })
   }

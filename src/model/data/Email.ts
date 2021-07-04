@@ -21,11 +21,12 @@ export default class Email extends Table {
     this.id = data?.id
     this.address = data?.address
     this.type =
-      (data?.type?.uniquename &&
+      data?.type &&
+      ((data?.type?.uniquename &&
         (await DatabaseService.findOne('data', EmailType, {
           uniquename: data.type.uniquename,
         }))) ||
-      (data?.type && (await new EmailType().create(data.type)))
+        (data?.type && (await new EmailType().create(data.type))))
 
     return this
   }
@@ -53,7 +54,6 @@ export default class Email extends Table {
       type: {
         label: 'Typ',
         type: EmailType.getDatamodel(),
-        required: true,
       },
     })
   }

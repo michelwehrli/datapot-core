@@ -35,25 +35,28 @@ export default class Address extends Table {
     this.pobox = data?.pobox
 
     this.zip =
-      (data?.zip?.id &&
+      data?.zip &&
+      ((data?.zip?.id &&
         (await DatabaseService.findOne('data', Zip, {
           id: data.zip.id,
         }))) ||
-      (data?.zip && (await new Zip().create(data.zip)))
+        (data?.zip && (await new Zip().create(data.zip))))
 
     this.county =
-      (data?.county?.uniquename &&
+      data?.county &&
+      ((data?.county?.uniquename &&
         (await DatabaseService.findOne('data', County, {
           uniquename: data.county.uniquename,
         }))) ||
-      (data?.county && (await new County().create(data.county)))
+        (data?.county && (await new County().create(data.county))))
 
     this.country =
-      (data?.country?.uniquename &&
+      data?.country &&
+      ((data?.country?.uniquename &&
         (await DatabaseService.findOne('data', Country, {
           uniquename: data.country.uniquename,
         }))) ||
-      (data?.country && (await new Country().create(data.country)))
+        (data?.country && (await new Country().create(data.country))))
 
     return this
   }

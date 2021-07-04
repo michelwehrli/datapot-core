@@ -244,6 +244,7 @@ export default class O365Exporter {
           companyName: c.companiesWithLocation[0].company.name,
         }),
       ...(c.department && { department: c.department }),
+      ...(c.profession && { profession: c.profession }),
       ...(c.emails &&
         c.emails.length > 0 && {
           emailAddresses: (c.emails.toArray() as Email[])

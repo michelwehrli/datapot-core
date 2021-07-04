@@ -21,11 +21,12 @@ export default class Socialmedia extends Table {
     this.id = data?.id
     this.url = data?.url
     this.type =
-      (data?.type?.uniquename &&
+      data?.type &&
+      ((data?.type?.uniquename &&
         (await DatabaseService.findOne('data', SocialmediaType, {
           uniquename: data.type.uniquename,
         }))) ||
-      (data?.type && (await new SocialmediaType().create(data.type)))
+        (data?.type && (await new SocialmediaType().create(data.type))))
     return this
   }
 
@@ -52,7 +53,6 @@ export default class Socialmedia extends Table {
       type: {
         label: 'Typ',
         type: SocialmediaType.getDatamodel(),
-        required: true,
       },
     })
   }

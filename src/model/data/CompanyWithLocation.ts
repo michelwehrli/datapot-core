@@ -24,13 +24,13 @@ export default class CompanyWithLocation extends Table {
     this.id = data?.id
     this.company =
       (data?.company?.id &&
-        (await DatabaseService.findOne('data', Company, {
+        (await DatabaseService.findOne<Company>('data', Company, {
           id: data.company.id,
         }))) ||
       (data?.company && (await new Company().create(data.company)))
     this.address =
       (data?.address?.id &&
-        (await DatabaseService.findOne('data', Address, {
+        (await DatabaseService.findOne<Address>('data', Address, {
           id: data.address.id,
         }))) ||
       (data?.address && (await new Address().create(data.address)))

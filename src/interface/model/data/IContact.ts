@@ -31,6 +31,7 @@ export default abstract class IContact extends ITable {
     | Collection<CompanyWithLocation>
     | ICompanyWithLocation[]
   abstract department?: string
+  abstract profession?: string
   abstract positions?: string[]
   abstract phonenumbers?: Collection<Phonenumber> | IPhonenumber[]
   abstract emails?: Collection<Email> | IEmail[]

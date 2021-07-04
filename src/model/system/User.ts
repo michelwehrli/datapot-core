@@ -55,18 +55,20 @@ export default class User extends Table {
     this.o365_oaccess_token = data?.o365_oaccess_token
 
     this.image =
-      (data?.image?.id &&
+      data?.image &&
+      ((data?.image?.id &&
         (await DatabaseService.findOne('data', Document, {
           id: data.image.id,
         }))) ||
-      (data?.image && (await new Document().create(data.image)))
+        (data?.image && (await new Document().create(data.image))))
 
     this.design =
-      (data?.design?.uniquename &&
+      data?.image &&
+      ((data?.design?.uniquename &&
         (await DatabaseService.findOne('data', Design, {
           uniquename: data.design.uniquename,
         }))) ||
-      (data?.design && (await new Design().create(data.design)))
+        (data?.design && (await new Design().create(data.design))))
 
     return this
   }

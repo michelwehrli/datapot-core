@@ -1,10 +1,4 @@
-import {
-  Entity,
-  MikroORM,
-  Populate,
-  RequestContext,
-  wrap,
-} from '@mikro-orm/core'
+import { MikroORM, RequestContext } from '@mikro-orm/core'
 import bcrypt from 'bcrypt'
 import { Express } from 'express'
 import { NextFunction, Request, Response } from 'express'
@@ -12,7 +6,6 @@ import * as fs from 'fs'
 import * as jwt from 'jsonwebtoken'
 import * as mime from 'mime-types'
 import { OIDCStrategy } from 'passport-azure-ad'
-import { Database } from 'sqlite3'
 
 import Backupper from '../abstraction/Backupper'
 import CSVExporter from '../abstraction/CSVExport'
@@ -764,9 +757,9 @@ export default class Router {
         graph_setUserForO365(res.locals.user, users)
         passport.authenticate('azuread-openidconnect', {
           reponse: res,
-          failureRedirect: 'https://new-crm.datapot.ch/crm/export',
+          failureRedirect: 'https://new-crm.datapot.ch/crm/tasks',
           failureFlash: false,
-          successRedirect: 'https://new-crm.datapot.ch/crm/export',
+          successRedirect: 'https://new-crm.datapot.ch/crm/tasks',
         })(req, res, next)
       }
     )

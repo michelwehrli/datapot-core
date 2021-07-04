@@ -57,25 +57,28 @@ export default class Company extends Table {
     this.websites = data?.websites
 
     this.contact_person =
-      (data?.contact_person?.id &&
+      data?.contact_person &&
+      ((data?.contact_person?.id &&
         (await DatabaseService.findOne('data', Contact, {
           id: data.contact_person.id,
         }))) ||
-      (data?.contact_person &&
-        (await new Contact().create(data.contact_person)))
+        (data?.contact_person &&
+          (await new Contact().create(data.contact_person))))
     this.rwstatus =
-      (data?.rwstatus?.uniquename &&
+      data?.rwstatus &&
+      ((data?.rwstatus?.uniquename &&
         (await DatabaseService.findOne('data', RWStatus, {
           uniquename: data.rwstatus.uniquename,
         }))) ||
-      (data?.rwstatus && (await new RWStatus().create(data.rwstatus)))
+        (data?.rwstatus && (await new RWStatus().create(data.rwstatus))))
     this.relationship =
-      (data?.relationship?.uniquename &&
+      data?.relationship &&
+      ((data?.relationship?.uniquename &&
         (await DatabaseService.findOne('data', Relationship, {
           uniquename: data.relationship.uniquename,
         }))) ||
-      (data?.relationship &&
-        (await new Relationship().create(data.relationship)))
+        (data?.relationship &&
+          (await new Relationship().create(data.relationship))))
 
     this.addresses.set(
       await Global.getCollection<Address>(data.addresses as any, 'id', Address)
